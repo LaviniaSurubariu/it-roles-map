@@ -1,0 +1,2325 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Harta meseriilor IT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: o aplicație desenată ca hartă pe straturi; fiecare strat e o familie de meserii, click deschide rolurile */
+:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#152033; --muted:#566275; --line:#D9DFE8; --soft:#E9EDF4;
+  --accent:#2A4BC4;
+  --f-prod:#C0287A; --f-dev:#2A5BE0; --f-data:#7034D6; --f-infra:#B86A00; --f-qa:#08875F; --f-sec:#D02B2B; --f-arh:#4A5872;
+  --display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --body:"Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E131B; --surface:#161D28; --ink:#E5EAF2; --muted:#9AA6B8; --line:#2A3445; --soft:#1F2836;
+  --accent:#8EA6FF;
+  --f-prod:#F27DB8; --f-dev:#7E9EFF; --f-data:#B79BFF; --f-infra:#F2AE4B; --f-qa:#4ED1A2; --f-sec:#FF7C7C; --f-arh:#A6B4CC;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0E131B; --surface:#161D28; --ink:#E5EAF2; --muted:#9AA6B8; --line:#2A3445; --soft:#1F2836;
+  --accent:#8EA6FF;
+  --f-prod:#F27DB8; --f-dev:#7E9EFF; --f-data:#B79BFF; --f-infra:#F2AE4B; --f-qa:#4ED1A2; --f-sec:#FF7C7C; --f-arh:#A6B4CC;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important}}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;padding-inline:16px}
+.wrap{max-width:1120px;margin-inline:auto}
+h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
+h2{font-size:clamp(1.7rem,3.4vw,2.4rem);font-weight:800;letter-spacing:-.01em}
+h3{font-size:1.2rem;font-weight:700}
+p{margin:0}
+.lead{color:var(--muted);max-width:62ch;font-size:1.08rem}
+.eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+/* nav */
+nav.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin-inline:-16px;padding:10px 16px}
+nav.top .wrap{display:flex;gap:6px 18px;align-items:center;flex-wrap:wrap}
+nav.top b{font-family:var(--display);font-weight:800;margin-right:auto}
+nav.top a{color:var(--muted);text-decoration:none;font-size:.95rem}
+nav.top a:hover{color:var(--ink)}
+
+section{padding-block:64px;display:grid;gap:28px}
+section + section{border-top:1px solid var(--line)}
+
+/* hero */
+.hero{padding-block:48px 56px;display:grid;gap:20px}
+.hero h1{font-size:clamp(2.4rem,6.5vw,4.6rem);font-weight:800;letter-spacing:-.025em;max-width:16ch}
+.hero h1 span{color:var(--accent)}
+
+/* app map */
+.appmap{display:grid;grid-template-columns:1fr 150px 150px;grid-template-rows:auto repeat(4,auto);gap:8px}
+.band{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;text-align:left;cursor:pointer;display:grid;gap:6px;align-content:start;transition:border-color .15s, transform .15s;position:relative}
+.band:hover{border-color:var(--fc);transform:translateY(-1px)}
+.band[aria-pressed="true"]{border-color:var(--fc);box-shadow:0 0 0 1px var(--fc) inset}
+.band .q{font-family:var(--display);font-weight:700;font-size:1.12rem;color:var(--ink)}
+.band .fam{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--fc)}
+.band .fam i{width:10px;height:10px;border-radius:3px;background:var(--fc);display:inline-block}
+.band .ex{color:var(--muted);font-size:.95rem}
+.band .n{font-family:var(--mono);font-size:.75rem;color:var(--muted)}
+.b-arh{grid-column:1 / -1}
+.b-prod{grid-column:1}.b-dev{grid-column:1}.b-data{grid-column:1}.b-infra{grid-column:1}
+.b-qa{grid-column:2;grid-row:2 / 6}.b-sec{grid-column:3;grid-row:2 / 6}
+.b-qa,.b-sec{align-content:center}
+.mapnote{font-size:.92rem;color:var(--muted)}
+@media (max-width:760px){
+  .appmap{grid-template-columns:1fr 1fr}
+  .b-arh,.b-prod,.b-dev,.b-data,.b-infra{grid-column:1 / -1}
+  .b-qa{grid-column:1;grid-row:auto}.b-sec{grid-column:2;grid-row:auto}
+}
+
+/* roles */
+.controls{display:grid;gap:14px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row .lbl{font-weight:600;margin-right:4px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 13px;cursor:pointer;font-size:.93rem;display:inline-flex;gap:7px;align-items:center}
+.chip i{width:9px;height:9px;border-radius:3px;background:var(--fc,var(--muted))}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.status{font-size:.92rem;color:var(--muted);min-height:1.4em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:left;cursor:pointer;display:grid;gap:8px;align-content:start;transition:opacity .2s, border-color .15s}
+.card:hover{border-color:var(--fc)}
+.card.dim{opacity:.32}
+.card .top{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.card .fam{font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--fc);display:flex;gap:6px;align-items:center}
+.card .fam i{width:8px;height:8px;border-radius:2px;background:var(--fc)}
+.card h3{font-size:1.15rem}
+.card p{color:var(--muted);font-size:.96rem}
+.card .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.pill{font-size:.75rem;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.pill.up{color:var(--f-qa);border-color:color-mix(in srgb,var(--f-qa) 45%,var(--line))}
+.pill.chg{color:var(--f-infra);border-color:color-mix(in srgb,var(--f-infra) 45%,var(--line))}
+
+/* dialog */
+dialog{border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);padding:0;width:min(720px,calc(100vw - 24px));max-height:calc(100dvh - 32px)}
+dialog::backdrop{background:rgba(8,12,20,.55)}
+.dlg{padding:24px;display:grid;gap:18px}
+.dlg header{display:grid;gap:8px;padding-right:40px}
+.dlg h3{font-size:1.7rem;font-weight:800}
+.dlg .close{position:absolute;top:14px;right:14px;border:1px solid var(--line);background:var(--soft);border-radius:8px;width:34px;height:34px;cursor:pointer;font-size:1.1rem}
+.dlg .blk{display:grid;gap:6px}
+.dlg .blk h4{margin:0;font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.dlg .app{background:var(--soft);border-radius:10px;padding:12px 14px}
+.tech{display:flex;flex-wrap:wrap;gap:6px}
+.tech span{font-family:var(--mono);font-size:.8rem;background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:3px 8px}
+.links{display:flex;flex-wrap:wrap;gap:6px}
+.links button{border:1px solid var(--line);background:none;border-radius:999px;padding:4px 11px;cursor:pointer;font-size:.9rem;display:inline-flex;gap:6px;align-items:center}
+.links button i{width:8px;height:8px;border-radius:2px;background:var(--fc)}
+.links button:hover{border-color:var(--fc)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:600px){.two{grid-template-columns:1fr}}
+
+/* testing */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:760px){.compare{grid-template-columns:1fr}}
+.flow{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:12px}
+.steps{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.92rem}
+.steps span{background:var(--soft);border-radius:6px;padding:4px 9px}
+.steps .who-qa{background:color-mix(in srgb,var(--f-qa) 18%,var(--surface))}
+.steps .who-dev{background:color-mix(in srgb,var(--f-dev) 18%,var(--surface))}
+.steps em{font-style:normal;color:var(--muted)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:620px;font-size:.96rem}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:500}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600;white-space:nowrap}
+.who{display:inline-block;font-size:.8rem;border-radius:999px;padding:1px 9px;margin:1px 4px 1px 0}
+.who.d{background:color-mix(in srgb,var(--f-dev) 16%,var(--surface));color:var(--f-dev)}
+.who.q{background:color-mix(in srgb,var(--f-qa) 16%,var(--surface));color:var(--f-qa)}
+.who.s{background:color-mix(in srgb,var(--f-sec) 16%,var(--surface));color:var(--f-sec)}
+.who.a{background:color-mix(in srgb,var(--f-infra) 16%,var(--surface));color:var(--f-infra)}
+
+/* trends */
+.trends{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.trend{border-top:2px solid var(--ink);padding-top:14px;display:grid;gap:8px;align-content:start}
+.trend p{color:var(--muted)}
+.trend .so{color:var(--ink);font-size:.95rem}
+
+/* ladder */
+.ladder{display:grid;grid-template-columns:repeat(4,1fr) 1.3fr;gap:10px;align-items:stretch}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:6px;align-content:start}
+.step b{font-family:var(--display);font-size:1.1rem}
+.step p{color:var(--muted);font-size:.93rem}
+.step .yrs{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.fork{display:grid;gap:10px}
+.fork .step{border-style:dashed}
+@media (max-width:900px){.ladder{grid-template-columns:1fr 1fr}.fork{grid-column:1 / -1;grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.ladder,.fork{grid-template-columns:1fr}}
+
+/* glossary */
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:4px 28px;margin:0}
+.gloss div{padding-block:10px;border-bottom:1px solid var(--line);min-width:0}
+.gloss dt{font-family:var(--mono);font-size:.9rem;font-weight:500}
+.gloss dd{margin:2px 0 0;color:var(--muted);font-size:.95rem}
+#gq{font:inherit;width:100%;max-width:360px;padding:9px 13px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
+
+/* start */
+.tips{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;counter-reset:t}
+.tip{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:6px;align-content:start}
+.tip p{color:var(--muted);font-size:.95rem}
+footer{padding-block:28px 48px;color:var(--muted);font-size:.88rem;border-top:1px solid var(--line)}
+</style>
+
+<style>
+.pill.down{color:var(--f-sec);border-color:color-mix(in srgb,var(--f-sec) 45%,var(--line))}
+.techlist{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.techlist li{display:grid;grid-template-columns:minmax(120px,190px) 1fr;gap:12px;align-items:baseline;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.techlist li:last-child{border-bottom:0}
+.techlist code{font-family:var(--mono);font-size:.84rem;font-weight:500}
+.techlist span{color:var(--muted);font-size:.94rem}
+@media (max-width:520px){.techlist li{grid-template-columns:1fr;gap:2px}}
+.techcats{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
+@media (max-width:420px){.techcats{grid-template-columns:1fr}}
+.techcat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:grid;gap:12px;align-content:start;min-width:0}
+.dlg .warn{background:color-mix(in srgb,var(--f-sec) 10%,var(--surface));border-radius:10px;padding:12px 14px}
+.tk{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-decoration:underline dotted;text-decoration-color:var(--accent);text-underline-offset:3px;text-decoration-thickness:1.5px}
+.tk:hover{color:var(--accent)}
+#pop{position:absolute;z-index:20;width:min(320px,calc(100vw - 32px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:0 10px 30px rgba(10,15,25,.18);display:grid;gap:6px;font-size:.95rem;line-height:1.5}
+#pop b{font-family:var(--mono);font-size:.9rem}
+#pop p{color:var(--muted)}
+.pop-h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pop-x{border:0;background:var(--soft);border-radius:6px;width:26px;height:26px;cursor:pointer}
+.pop-go{justify-self:start;border:0;background:none;color:var(--accent);padding:2px 0;cursor:pointer;font:inherit;font-size:.9rem}
+.pop-go:hover{text-decoration:underline}
+[data-term]{scroll-margin-top:90px;border-radius:6px;transition:background .3s}
+.flash{animation:flash 1.8s ease-out}
+@keyframes flash{0%,40%{background:color-mix(in srgb,var(--accent) 22%,transparent)}100%{background:transparent}}
+.layout{display:block}
+.toc{display:none}
+@media (min-width:1180px){
+  .layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:48px;max-width:1400px;margin-inline:auto}
+  .layout > .wrap{max-width:1120px;width:100%;margin-inline:0 auto}
+  .toc{display:block;position:sticky;top:calc(env(safe-area-inset-top,0px) + 72px);align-self:start;max-height:calc(100vh - 96px);overflow-y:auto;padding-block:48px 24px}
+  nav.top a{display:none}
+}
+.toc ol{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:2px}
+.toc a{display:block;padding:4px 10px;border-left:2px solid var(--line);color:var(--muted);text-decoration:none;font-size:.92rem;line-height:1.35}
+.toc a:hover{color:var(--ink)}
+.toc li.on > a{color:var(--ink);border-left-color:var(--accent);font-weight:600}
+.toc .sub{display:none;margin:2px 0 6px 10px}
+.toc .sub a{font-size:.84rem;border-left-color:transparent;padding-block:3px}
+.toc li.on > .sub{display:grid}
+section[id],.techcat[id]{scroll-margin-top:80px}
+.teamwrap{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:760px){.teamwrap{grid-template-columns:1fr}}
+.tcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:10px}
+.members{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.members li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:center;padding-block:8px;border-bottom:1px solid var(--line)}
+.members li:last-child{border-bottom:0}
+.members span{color:var(--muted);font-size:.9rem}
+@media (max-width:480px){.members li{grid-template-columns:1fr;gap:2px}}
+.rchip{border:1px solid var(--line);background:none;border-radius:999px;padding:4px 11px;cursor:pointer;font-size:.92rem;display:inline-flex;gap:7px;align-items:center;justify-self:start;text-align:left}
+.rchip i{width:8px;height:8px;border-radius:2px;background:var(--fc);flex:none}
+.rchip:hover{border-color:var(--fc)}
+.tside{display:grid;gap:12px;align-content:start;padding:4px 2px}
+.tnames{display:flex;flex-wrap:wrap;gap:6px}
+.tnames span{background:var(--soft);border-radius:6px;padding:4px 10px;font-size:.92rem}
+.tnote{color:var(--muted);font-size:.93rem;border-top:1px solid var(--line);padding-top:12px}
+.shared{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.scard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:10px;align-content:start}
+.scard h4{margin:0;font-family:var(--display);font-size:1.05rem}
+.scard p{color:var(--muted);font-size:.94rem}
+.techcats{align-items:start}
+details.techcat{gap:0;padding:0}
+details.techcat > summary{list-style:none;cursor:pointer;padding:14px 18px;display:grid;gap:4px;border-radius:12px}
+details.techcat > summary::-webkit-details-marker{display:none}
+details.techcat > summary:hover{background:var(--soft)}
+details.techcat .sh{display:flex;align-items:center;gap:10px}
+details.techcat .sh::after{content:"+";margin-left:auto;font-family:var(--mono);font-size:1.1rem;color:var(--muted)}
+details.techcat[open] .sh::after{content:"−"}
+details.techcat .cnt{font-family:var(--mono);font-size:.75rem;color:var(--muted);background:var(--soft);border-radius:999px;padding:1px 8px}
+details.techcat .prev{color:var(--muted);font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+details.techcat[open] .prev{display:none}
+details.techcat > .techlist{padding:4px 18px 16px}
+.sizes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.size{display:grid;grid-row:span 9;grid-template-rows:subgrid;gap:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.size-h{padding:16px 16px 12px;display:grid;gap:4px;border-bottom:1px solid var(--line);background:var(--soft)}
+.size-h h3{font-size:1.25rem}
+.cell{padding:12px 16px;border-bottom:1px solid var(--line);display:grid;gap:6px;align-content:start}
+.cell:last-child{border-bottom:0}
+.cell .asp{font-family:var(--mono);font-size:.7rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.cell p{font-size:.93rem;color:var(--ink)}
+.cell .none{font-size:.85rem;color:var(--muted);font-style:italic}
+.cell .rchip{font-size:.85rem;padding:3px 9px}
+@media (max-width:860px){.sizes{grid-template-columns:1fr}.size{grid-row:auto;grid-template-rows:none}}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:.9rem;color:var(--muted);align-items:center}
+.lang{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;flex:none}
+.lang button{border:0;background:none;padding:4px 10px;cursor:pointer;font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.toc .sub a.cur{color:var(--ink);font-weight:600;background:var(--soft);border-left:2px solid var(--accent);border-radius:0 6px 6px 0}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<template id="tpl-ro">
+<nav class="top"><div class="wrap">
+  <b>Meseriile din IT</b>
+  <a href="#harta">Harta</a><a href="#roluri">Roluri</a><a href="#echipe">Echipe</a><a href="#scadere">Roluri în scădere</a><a href="#testare">Testarea</a><a href="#tehnologii">Tehnologii</a><a href="#tendinte">Tendințe</a><a href="#crestere">Niveluri</a><a href="#glosar">Glosar</a>
+  <div class="lang" role="group" aria-label="Limbă"><button type="button" data-setlang="ro">RO</button><button type="button" data-setlang="en">EN</button></div>
+</div></nav>
+
+<div class="layout">
+<aside class="toc" aria-label="Cuprins"><p class="eyebrow">Cuprins</p><ol id="toc"></ol></aside>
+<div class="wrap">
+
+<header class="hero">
+  <p class="eyebrow">Pentru cine e la început în IT</p>
+  <h1>Meseriile din <span>IT</span></h1>
+  <p class="lead">O prezentare a principalelor arii din IT: ce face fiecare rol, ce tehnologii folosește și cum se schimbă piața în 2026. Exemplele folosesc o aplicație de livrare de mâncare, ca să fie clar unde intervine fiecare rol.</p>
+</header>
+
+<section id="harta" style="padding-top:8px;border-top:0">
+  <div style="display:grid;gap:10px">
+    <h2>Ariile principale</h2>
+    <p class="lead">Fiecare bloc este o arie din IT. Apasă pe unul ca să vezi rolurile din ea.</p>
+  </div>
+  <div class="appmap" id="appmap"></div>
+  <p class="mapnote">Calitatea și securitatea sunt pe verticală pentru că se aplică tuturor celorlalte arii: se testează și se securizează atât interfața, cât și serverul și datele.</p>
+</section>
+
+<section id="roluri">
+  <div style="display:grid;gap:10px">
+    <h2>Rolurile</h2>
+    <p class="lead">Apasă pe un rol ca să vezi ce face, cum arată munca de zi cu zi, ce tehnologii folosește (cu explicații) și cum poți începe.</p>
+  </div>
+  <div class="controls">
+    <div class="row" id="famrow"><span class="lbl">Arie:</span></div>
+    <div class="row" id="likerow"><span class="lbl">Mă interesează:</span></div>
+    <div class="legend"><span>Tendință:</span><span class="pill up">în creștere</span><span class="pill">stabil</span><span class="pill chg">în schimbare</span><span class="pill down">în scădere</span></div>
+    <p class="status" id="status" aria-live="polite"></p>
+  </div>
+  <div class="grid" id="grid"></div>
+</section>
+
+<section id="echipe">
+  <div style="display:grid;gap:10px">
+    <h2>Cum arată o echipă</h2>
+    <p class="lead">Nu orice firmă are toate rolurile. Cu cât firma este mai mică, cu atât sunt mai puține roluri, iar munca rolurilor care lipsesc este preluată de ceilalți, de cele mai multe ori de developeri. Mărimile sunt orientative. Apasă pe un rol ca să vezi detaliile lui.</p>
+  </div>
+  <div class="sizes" id="sizes"></div>
+  <p class="tnote" style="max-width:75ch">În firmele de outsourcing, foarte multe în România, echipa este formată pentru proiectul unui client. Poate arăta ca oricare dintre coloanele de mai sus, în funcție de contract, și uneori lucrează împreună cu oamenii clientului.</p>
+</section>
+
+<section id="scadere">
+  <div style="display:grid;gap:10px">
+    <p class="eyebrow">Important de știut înainte să alegi</p>
+    <h2>Roluri în scădere</h2>
+    <p class="lead">Unele roluri au tot mai puține posturi noi, pentru că o parte din munca lor este preluată de alte roluri sau automatizată, inclusiv cu AI. Nu dispar complet, dar intrarea în ele este mai grea, iar cerințele s-au schimbat.</p>
+  </div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Rol</th><th>Ce se întâmplă</th><th>Cine preia munca</th><th>Ce poți face</th></tr></thead>
+      <tbody>
+        <tr><td>Tester manual</td><td>Testele repetitive sunt automatizate, iar developerii își scriu singuri testele.</td><td>Developeri, QA automation</td><td>Învață automatizare (Playwright, testare de API) și treci spre QA automation.</td></tr>
+        <tr><td>UX / UI designer</td><td>Multe firme folosesc design systems gata făcute și unelte AI care generează interfețe. O parte din design o fac developerii frontend și product managerii. Posturile de junior sunt puține.</td><td>Frontend developeri, product manageri</td><td>Combină designul cu frontend sau cu user research.</td></tr>
+        <tr><td>Business analyst</td><td>Cerințele sunt scrise tot mai des direct de product manager sau de developeri, iar AI-ul ajută la documentare.</td><td>Product manageri, developeri, tech leads</td><td>Specializează-te pe un domeniu (bănci, asigurări, sănătate) sau treci spre product management.</td></tr>
+        <tr><td>Product owner</td><td>Rolul este comasat tot mai des cu cel de product manager.</td><td>Product manageri</td><td>Învață partea de strategie și de analiză de date a unui product manager.</td></tr>
+        <tr><td>Scrum master</td><td>Echipele își organizează singure procesul, iar ce rămâne este preluat de engineering manager sau de tech lead.</td><td>Engineering manageri, tech leads</td><td>Treci spre project management sau engineering management.</td></tr>
+        <tr><td>Data analyst (junior)</td><td>Rapoartele simple se generează tot mai des cu AI, direct din date.</td><td>Product manageri, unelte AI</td><td>Statistică și înțelegerea business-ului, sau trecere spre data engineering.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="testare">
+  <div style="display:grid;gap:10px">
+    <p class="eyebrow">Cea mai vizibilă schimbare</p>
+    <h2>Testarea făcută de developeri</h2>
+    <p class="lead">Înainte, developerul scria codul, iar echipa de testare îl verifica la final. Acum, developerii scriu o mare parte din teste, iar acestea rulează automat la fiecare modificare de cod. Testerii care rămân se ocupă mai ales de automatizare, de strategia de testare și de testarea exploratorie.</p>
+  </div>
+  <div class="compare">
+    <div class="flow">
+      <h3>Înainte</h3>
+      <div class="steps"><span class="who-dev">Developerul scrie codul</span><em>→</em><span class="who-qa">QA testează manual, la final</span><em>→</em><span>Bugurile apar târziu</span><em>→</em><span class="who-dev">Developerul repară</span><em>→</em><span>Release-uri rare</span></div>
+      <p style="color:var(--muted);font-size:.95rem">Bugurile erau găsite după săptămâni și erau mai greu de reparat.</p>
+    </div>
+    <div class="flow">
+      <h3>Acum</h3>
+      <div class="steps"><span class="who-dev">Developerul scrie codul și testele</span><em>→</em><span>Testele rulează automat (CI)</span><em>→</em><span class="who-qa">QA automatizează testele end-to-end</span><em>→</em><span>Release-uri dese și mici</span></div>
+      <p style="color:var(--muted);font-size:.95rem">Abordarea se numește „shift-left”: testarea se face mai devreme în procesul de dezvoltare.</p>
+    </div>
+  </div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Tip de test</th><th>Ce verifică (exemplu)</th><th>Cine îl face de obicei</th></tr></thead>
+      <tbody>
+        <tr><td>Unit test</td><td>Funcția care calculează costul livrării returnează valoarea corectă pentru 3 km.</td><td><span class="who d">Developer</span></td></tr>
+        <tr><td>Test de integrare</td><td>Comanda este salvată corect în baza de date și trimisă restaurantului.</td><td><span class="who d">Developer</span><span class="who q">QA automation</span></td></tr>
+        <tr><td>End-to-end</td><td>Un script automat deschide aplicația, adaugă un produs în coș, plătește și verifică confirmarea.</td><td><span class="who q">QA automation</span><span class="who d">Developer</span></td></tr>
+        <tr><td>Exploratoriu</td><td>Ce se întâmplă dacă aplicația este închisă în timpul plății sau dacă se adaugă 400 de produse în coș.</td><td><span class="who q">QA</span></td></tr>
+        <tr><td>Performanță</td><td>Aplicația funcționează normal când 50.000 de utilizatori comandă în același timp.</td><td><span class="who q">QA</span><span class="who a">SRE</span></td></tr>
+        <tr><td>Securitate</td><td>Un utilizator nu poate vedea comenzile altui utilizator modificând un ID din adresă.</td><td><span class="who s">Securitate</span><span class="who d">Developer</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="tehnologii">
+  <div style="display:grid;gap:10px">
+    <h2>Tehnologii, pe scurt</h2>
+    <p class="lead">Numele care apar des în anunțurile de job, grupate după ce fac. Apasă pe o categorie ca s-o deschizi. Sunt exemple frecvente, nu o listă completă: pentru aproape fiecare categorie există mai multe variante, iar fiecare firmă alege una sau câteva.</p>
+    <label for="tq" class="eyebrow" style="margin-top:6px">Caută o tehnologie</label>
+    <div class="row" style="gap:10px"><input id="tq" type="search" placeholder="ex. Docker, Terraform, React" style="font:inherit;width:100%;max-width:360px;padding:9px 13px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)"><button type="button" class="chip" id="tAll">Deschide tot</button><button type="button" class="chip" id="tNone">Închide tot</button></div>
+  </div>
+  <div class="techcats" id="techcats"></div>
+</section>
+
+<section id="tendinte">
+  <div style="display:grid;gap:10px">
+    <p class="eyebrow">Situația în 2026</p>
+    <h2>Tendințe actuale</h2>
+  </div>
+  <div class="trends">
+    <div class="trend"><h3>AI în munca de zi cu zi</h3><p>Developerii folosesc asistenți de cod (de exemplu Claude Code, GitHub Copilot sau Cursor) care scriu o parte mare din cod. Munca se mută spre verificarea codului, decizii tehnice și testare.</p><p class="so">Fundamentele rămân necesare: codul generat trebuie înțeles și verificat.</p></div>
+    <div class="trend"><h3>Testarea trece la developeri</h3><p>Developerii răspund de testele propriului cod. Rolul de QA se mută spre automatizare și strategie de testare.</p><p class="so">Pentru QA, automatizarea a devenit cerință de bază.</p></div>
+    <div class="trend"><h3>Securitate integrată în dezvoltare</h3><p>Verificările de securitate rulează automat la fiecare modificare de cod, nu doar la audituri periodice. Abordarea se numește DevSecOps.</p><p class="so">Orice developer trebuie să cunoască vulnerabilitățile de bază (OWASP Top 10).</p></div>
+    <div class="trend"><h3>Platform engineering</h3><p>O echipă dedicată construiește o platformă internă prin care developerii își fac singuri deploy-ul, fără să configureze infrastructura de la zero.</p><p class="so">Este o evoluție a rolului de DevOps.</p></div>
+    <div class="trend"><h3>Roluri mai largi</h3><p>Firmele caută oameni specializați pe o arie, dar cu cunoștințe de bază în ariile apropiate. Granițele dintre frontend și backend, sau dintre dezvoltare și testare, sunt tot mai mici.</p><p class="so">Rolurile foarte înguste au tot mai puține posturi.</p></div>
+    <div class="trend"><h3>Reglementări noi</h3><p>GDPR, directiva NIS2 și AI Act obligă firmele să demonstreze că protejează datele și folosesc AI în mod responsabil.</p><p class="so">Crește cererea pentru securitate și conformitate (GRC).</p></div>
+  </div>
+</section>
+
+<section id="crestere">
+  <div style="display:grid;gap:10px">
+    <p class="eyebrow">Valabil pentru majoritatea rolurilor</p>
+    <h2>Niveluri de experiență</h2>
+    <p class="lead">Nivelurile au aceleași denumiri în aproape toate rolurile. Diferența dintre ele este mărimea problemelor pe care le poți rezolva singur. Anii sunt orientativi.</p>
+  </div>
+  <div class="ladder">
+    <div class="step"><span class="yrs">0 - 1 ani</span><b>Intern / Junior</b><p>Lucrezi pe task-uri clare și mici, cu îndrumare. Înveți procesul echipei: Git, code review, Jira.</p></div>
+    <div class="step"><span class="yrs">2 - 4 ani</span><b>Mid</b><p>Implementezi singur un feature complet.</p></div>
+    <div class="step"><span class="yrs">4+ ani</span><b>Senior</b><p>Alegi soluțiile tehnice, anticipezi riscurile și îi ajuți pe colegii mai noi.</p></div>
+    <div class="step" style="align-content:center"><b>După senior</b><p>Urmează fie o direcție tehnică, fie una de management.</p></div>
+    <div class="fork">
+      <div class="step"><b>Direcția tehnică</b><p>Staff / Principal engineer, Software architect. Decizii tehnice pentru mai multe echipe.</p></div>
+      <div class="step"><b>Direcția de management</b><p>Tech lead, apoi Engineering manager. Echipa, procesele, angajările.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="glosar">
+  <div style="display:grid;gap:10px">
+    <h2>Glosar</h2>
+    <p class="lead">Termeni folosiți des în echipele de IT, pe care un începător nu îi știe neapărat. Apasă pe o categorie ca s-o deschizi. Termenii subliniați din pagină se deschid direct de aici sau din Tehnologii, pe scurt.</p>
+    <label for="gq" class="eyebrow" style="margin-top:6px">Caută un termen</label>
+    <div class="row" style="gap:10px"><input id="gq" type="search" placeholder="ex. framework, deploy, branch"><button type="button" class="chip" id="gAll">Deschide tot</button><button type="button" class="chip" id="gNone">Închide tot</button></div>
+  </div>
+  <div class="techcats" id="gloss"></div>
+</section>
+
+<section id="start">
+  <h2>Cum începi</h2>
+  <div class="tips">
+    <div class="tip"><h3>Baza comună</h3><p>Git, un limbaj de programare, programarea orientată pe obiecte, algoritmi și structuri de date, baze de date (SQL și noțiuni de NoSQL) și Linux la nivel de bază. Le folosesc aproape toate rolurile tehnice.</p></div>
+    <div class="tip"><h3>Proiecte proprii</h3><p>O aplicație mică, publicată online și cu teste, arată mai mult decât o listă de cursuri terminate.</p></div>
+    <div class="tip"><h3>Alege o arie, nu un rol exact</h3><p>La început e suficient să știi aria care te interesează. Rolul exact se clarifică după primele proiecte.</p></div>
+  </div>
+</section>
+
+<footer>Tehnologiile și tendințele sunt cele frecvente în 2026 și diferă de la o firmă la alta. Tendințele indică direcția generală a pieței.</footer>
+</div>
+</div>
+
+<dialog id="dlg"></dialog>
+</template>
+<template id="tpl-en">
+<nav class="top"><div class="wrap">
+  <b>Jobs in IT</b>
+  <a href="#harta">Map</a><a href="#roluri">Roles</a><a href="#echipe">Teams</a><a href="#scadere">Declining roles</a><a href="#testare">Testing</a><a href="#tehnologii">Technologies</a><a href="#tendinte">Trends</a><a href="#crestere">Levels</a><a href="#glosar">Glossary</a>
+  <div class="lang" role="group" aria-label="Language"><button type="button" data-setlang="ro">RO</button><button type="button" data-setlang="en">EN</button></div>
+</div></nav>
+
+<div class="layout">
+<aside class="toc" aria-label="Contents"><p class="eyebrow">Contents</p><ol id="toc"></ol></aside>
+<div class="wrap">
+
+<header class="hero">
+  <p class="eyebrow">For people starting out in IT</p>
+  <h1>Jobs in <span>IT</span></h1>
+  <p class="lead">An overview of the main areas in IT: what each role does, which technologies it uses and how the job market is changing in 2026. The examples use a food delivery app, so it is clear where each role fits in.</p>
+</header>
+
+<section id="harta" style="padding-top:8px;border-top:0">
+  <div style="display:grid;gap:10px">
+    <h2>The main areas</h2>
+    <p class="lead">Each block is an area of IT. Click one to see the roles in it.</p>
+  </div>
+  <div class="appmap" id="appmap"></div>
+  <p class="mapnote">Quality and security are drawn vertically because they apply to all the other areas: the interface, the server and the data all need to be tested and secured.</p>
+</section>
+
+<section id="roluri">
+  <div style="display:grid;gap:10px">
+    <h2>The roles</h2>
+    <p class="lead">Click a role to see what it does, what the daily work looks like, which technologies it uses (with explanations) and how to get started.</p>
+  </div>
+  <div class="controls">
+    <div class="row" id="famrow"><span class="lbl">Area:</span></div>
+    <div class="row" id="likerow"><span class="lbl">I am interested in:</span></div>
+    <div class="legend"><span>Trend:</span><span class="pill up">growing</span><span class="pill">stable</span><span class="pill chg">changing</span><span class="pill down">declining</span></div>
+    <p class="status" id="status" aria-live="polite"></p>
+  </div>
+  <div class="grid" id="grid"></div>
+</section>
+
+<section id="echipe">
+  <div style="display:grid;gap:10px">
+    <h2>What a team looks like</h2>
+    <p class="lead">Not every company has every role. The smaller the company, the fewer roles it has, and the work of the missing roles is taken over by others, most often by developers. Company sizes are approximate. Click a role to see its details.</p>
+  </div>
+  <div class="sizes" id="sizes"></div>
+  <p class="tnote" style="max-width:75ch">In outsourcing companies, which are very common in Romania, the team is put together for a client's project. It can look like any of the columns above, depending on the contract, and sometimes works together with the client's own people.</p>
+</section>
+
+<section id="scadere">
+  <div style="display:grid;gap:10px">
+    <p class="eyebrow">Worth knowing before you choose</p>
+    <h2>Declining roles</h2>
+    <p class="lead">Some roles have fewer and fewer new openings, because part of their work is taken over by other roles or automated, including with AI. They do not disappear completely, but they are harder to get into and the requirements have changed.</p>
+  </div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Role</th><th>What is happening</th><th>Who takes over the work</th><th>What you can do</th></tr></thead>
+      <tbody>
+        <tr><td>Manual tester</td><td>Repetitive tests are automated, and developers write their own tests.</td><td>Developers, QA automation</td><td>Learn test automation (Playwright, API testing) and move towards QA automation.</td></tr>
+        <tr><td>UX / UI designer</td><td>Many companies use ready-made design systems and AI tools that generate interfaces. Part of the design work is done by frontend developers and product managers. Junior openings are few.</td><td>Frontend developers, product managers</td><td>Combine design with frontend development or with user research.</td></tr>
+        <tr><td>Business analyst</td><td>Requirements are more and more often written directly by the product manager or by developers, with AI helping with documentation.</td><td>Product managers, developers, tech leads</td><td>Specialize in a domain (banking, insurance, healthcare) or move towards product management.</td></tr>
+        <tr><td>Product owner</td><td>The role is more and more often merged with the product manager role.</td><td>Product managers</td><td>Learn the strategy and data analysis side of product management.</td></tr>
+        <tr><td>Scrum master</td><td>Teams organize their own process, and what remains is taken over by the engineering manager or the tech lead.</td><td>Engineering managers, tech leads</td><td>Move towards project management or engineering management.</td></tr>
+        <tr><td>Data analyst (junior)</td><td>Simple reports are more and more often generated with AI, directly from the data.</td><td>Product managers, AI tools</td><td>Statistics and business understanding, or a move towards data engineering.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="testare">
+  <div style="display:grid;gap:10px">
+    <p class="eyebrow">The most visible change</p>
+    <h2>Testing done by developers</h2>
+    <p class="lead">In the past, the developer wrote the code and the testing team checked it at the end. Now developers write a large part of the tests, and the tests run automatically on every code change. The testers who remain focus mostly on automation, test strategy and exploratory testing.</p>
+  </div>
+  <div class="compare">
+    <div class="flow">
+      <h3>Before</h3>
+      <div class="steps"><span class="who-dev">The developer writes the code</span><em>→</em><span class="who-qa">QA tests manually, at the end</span><em>→</em><span>Bugs show up late</span><em>→</em><span class="who-dev">The developer fixes them</span><em>→</em><span>Rare releases</span></div>
+      <p style="color:var(--muted);font-size:.95rem">Bugs were found weeks later and were harder to fix.</p>
+    </div>
+    <div class="flow">
+      <h3>Now</h3>
+      <div class="steps"><span class="who-dev">The developer writes the code and the tests</span><em>→</em><span>Tests run automatically (CI)</span><em>→</em><span class="who-qa">QA automates end-to-end tests</span><em>→</em><span>Frequent, small releases</span></div>
+      <p style="color:var(--muted);font-size:.95rem">This approach is called "shift-left": testing happens earlier in the development process.</p>
+    </div>
+  </div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Type of test</th><th>What it checks (example)</th><th>Who usually does it</th></tr></thead>
+      <tbody>
+        <tr><td>Unit test</td><td>The function that calculates the delivery cost returns the correct value for 3 km.</td><td><span class="who d">Developer</span></td></tr>
+        <tr><td>Integration test</td><td>The order is saved correctly in the database and sent to the restaurant.</td><td><span class="who d">Developer</span><span class="who q">QA automation</span></td></tr>
+        <tr><td>End-to-end</td><td>An automated script opens the app, adds a product to the cart, pays and checks the confirmation.</td><td><span class="who q">QA automation</span><span class="who d">Developer</span></td></tr>
+        <tr><td>Exploratory</td><td>What happens if the app is closed during payment, or if 400 products are added to the cart.</td><td><span class="who q">QA</span></td></tr>
+        <tr><td>Performance</td><td>The app works normally when 50,000 users order at the same time.</td><td><span class="who q">QA</span><span class="who a">SRE</span></td></tr>
+        <tr><td>Security</td><td>A user cannot see another user's orders by changing an ID in the address.</td><td><span class="who s">Security</span><span class="who d">Developer</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="tehnologii">
+  <div style="display:grid;gap:10px">
+    <h2>Technologies in brief</h2>
+    <p class="lead">Names that come up often in job ads, grouped by what they do. Click a category to open it. These are common examples, not a complete list: almost every category has several options, and each company picks one or a few.</p>
+    <label for="tq" class="eyebrow" style="margin-top:6px">Search for a technology</label>
+    <div class="row" style="gap:10px"><input id="tq" type="search" placeholder="e.g. Docker, Terraform, React" style="font:inherit;width:100%;max-width:360px;padding:9px 13px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)"><button type="button" class="chip" id="tAll">Open all</button><button type="button" class="chip" id="tNone">Close all</button></div>
+  </div>
+  <div class="techcats" id="techcats"></div>
+</section>
+
+<section id="tendinte">
+  <div style="display:grid;gap:10px">
+    <p class="eyebrow">The situation in 2026</p>
+    <h2>Current trends</h2>
+  </div>
+  <div class="trends">
+    <div class="trend"><h3>AI in daily work</h3><p>Developers use coding assistants (for example Claude Code, GitHub Copilot or Cursor) that write a large part of the code. The work is shifting towards reviewing code, making technical decisions and testing.</p><p class="so">The fundamentals are still needed: generated code has to be understood and checked.</p></div>
+    <div class="trend"><h3>Testing moves to developers</h3><p>Developers are responsible for testing their own code. The QA role is shifting towards automation and test strategy.</p><p class="so">For QA, automation has become a basic requirement.</p></div>
+    <div class="trend"><h3>Security built into development</h3><p>Security checks run automatically on every code change, not only during periodic audits. This approach is called DevSecOps.</p><p class="so">Every developer needs to know the basic vulnerabilities (OWASP Top 10).</p></div>
+    <div class="trend"><h3>Platform engineering</h3><p>A dedicated team builds an internal platform that lets developers deploy on their own, without setting up infrastructure from scratch.</p><p class="so">It is an evolution of the DevOps role.</p></div>
+    <div class="trend"><h3>Broader roles</h3><p>Companies look for people who specialize in one area but have basic knowledge of the neighboring areas. The lines between frontend and backend, or between development and testing, keep getting thinner.</p><p class="so">Very narrow roles have fewer and fewer openings.</p></div>
+    <div class="trend"><h3>New regulations</h3><p>GDPR, the NIS2 directive and the AI Act require companies to show that they protect data and use AI responsibly.</p><p class="so">Demand for security and compliance (GRC) is growing.</p></div>
+  </div>
+</section>
+
+<section id="crestere">
+  <div style="display:grid;gap:10px">
+    <p class="eyebrow">Applies to most roles</p>
+    <h2>Experience levels</h2>
+    <p class="lead">The levels have the same names in almost every role. The difference between them is the size of the problems you can solve on your own. The years are approximate.</p>
+  </div>
+  <div class="ladder">
+    <div class="step"><span class="yrs">0 - 1 years</span><b>Intern / Junior</b><p>You work on small, clear tasks, with guidance. You learn how the team works: Git, code review, Jira.</p></div>
+    <div class="step"><span class="yrs">2 - 4 years</span><b>Mid</b><p>You build a complete feature on your own.</p></div>
+    <div class="step"><span class="yrs">4+ years</span><b>Senior</b><p>You choose the technical solutions, anticipate risks and help newer colleagues.</p></div>
+    <div class="step" style="align-content:center"><b>After senior</b><p>Next comes either a technical track or a management track.</p></div>
+    <div class="fork">
+      <div class="step"><b>Technical track</b><p>Staff / Principal engineer, Software architect. Technical decisions across several teams.</p></div>
+      <div class="step"><b>Management track</b><p>Tech lead, then Engineering manager. The team, the processes, hiring.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="glosar">
+  <div style="display:grid;gap:10px">
+    <h2>Glossary</h2>
+    <p class="lead">Terms used often in IT teams that a beginner may not know. Click a category to open it. Underlined terms anywhere on the page open from here or from Technologies in brief.</p>
+    <label for="gq" class="eyebrow" style="margin-top:6px">Search for a term</label>
+    <div class="row" style="gap:10px"><input id="gq" type="search" placeholder="e.g. framework, deploy, branch"><button type="button" class="chip" id="gAll">Open all</button><button type="button" class="chip" id="gNone">Close all</button></div>
+  </div>
+  <div class="techcats" id="gloss"></div>
+</section>
+
+<section id="start">
+  <h2>How to get started</h2>
+  <div class="tips">
+    <div class="tip"><h3>The common base</h3><p>Git, a programming language, object-oriented programming, algorithms and data structures, databases (SQL and some NoSQL) and basic Linux. Almost every technical role uses them.</p></div>
+    <div class="tip"><h3>Your own projects</h3><p>A small app, published online and with tests, shows more than a list of finished courses.</p></div>
+    <div class="tip"><h3>Choose an area, not an exact role</h3><p>At the start it is enough to know which area interests you. The exact role becomes clear after your first projects.</p></div>
+  </div>
+</section>
+
+<footer>The technologies and trends are the common ones in 2026 and differ from one company to another. The trends show the general direction of the market.</footer>
+</div>
+</div>
+
+<dialog id="dlg"></dialog>
+
+</template>
+<script>
+const DATA={};
+DATA.ro=(()=>{
+const FAM = {
+  arh:{n:"Arhitectură și conducere", q:"Cum e organizat sistemul?", ex:"Ex: decizia ca plățile să fie un serviciu separat de comenzi."},
+  prod:{n:"Produs și design", q:"Ce construim și cum arată?", ex:"Ex: ce feature-uri are aplicația și cum arată ecranele."},
+  dev:{n:"Dezvoltare", q:"Codul aplicației", ex:"Ex: ecranul cu meniul restaurantului și calculul costului de livrare."},
+  data:{n:"Date și AI", q:"Datele și AI-ul", ex:"Ex: recomandările personalizate și estimarea timpului de livrare."},
+  infra:{n:"Infrastructură", q:"Unde rulează aplicația?", ex:"Ex: serverele aplicației și deploy-ul versiunilor noi."},
+  qa:{n:"Calitate", q:"Funcționează corect?", ex:"Ex: o comandă nu se plătește de două ori."},
+  sec:{n:"Securitate", q:"Este sigur?", ex:"Ex: protecția datelor de card și a conturilor."}
+};
+const FAM_ORDER=["arh","prod","dev","data","infra","qa","sec"];
+const LIKES = {
+  vizual:"interfețe și design", logica:"programare și logică", date:"date și cifre",
+  strica:"găsirea problemelor", automat:"automatizare", oameni:"lucrul cu oamenii",
+  hardware:"hardware", investighez:"investigarea incidentelor"
+};
+const T={up:["în creștere","up"],st:["stabil",""],chg:["în schimbare","chg"],down:["în scădere","down"]};
+const R = [
+ {id:"swe",f:"dev",n:"Software engineer / developer",s:"Termenul general pentru cine proiectează, scrie și întreține software.",
+  app:"Orice parte a codului aplicației. Frontend, backend sau fullstack sunt specializări ale acestui rol.",
+  zi:"Implementează feature-uri, scrie teste, face code review la colegi, repară buguri. În anunțuri, „software engineer” poate însemna backend, frontend sau fullstack; specializarea reiese din descriere. În practică, „engineer” și „developer” se folosesc la fel.",
+  fit:"Îți place să rezolvi probleme prin cod.",
+  start:"Un limbaj de programare, programarea orientată pe obiecte, algoritmi și structuri de date, Git, lucrul cu baze de date (SQL și noțiuni de NoSQL) și bazele testării. Apoi alege o specializare.",
+  ov:["fe","be","fs"],t:"st",e:1,l:["logica"]},
+ {id:"fe",f:"dev",n:"Frontend developer",s:"Construiește partea vizibilă a unei aplicații web.",
+  app:"Pagina cu restaurante, filtrele, coșul de cumpărături și formularul de plată.",
+  zi:"Transformă designul primit de la designer (de obicei în Figma) în pagini care funcționează pe telefon, tabletă și laptop. Conectează interfața la datele primite de la backend. Rezolvă probleme de afișare între browsere.",
+  fit:"Îți place să vezi imediat rezultatul muncii și ești atent la detalii vizuale.",
+  start:"HTML, CSS și JavaScript, apoi un framework de interfață (de exemplu React, Angular sau Vue; React are cele mai multe anunțuri). Publică online câteva proiecte proprii.",
+  ov:["fs","ux","mob"],t:"st",e:1,l:["vizual","logica"]},
+ {id:"be",f:"dev",n:"Backend developer",s:"Scrie logica aplicației care rulează pe server.",
+  app:"Primește comanda, verifică dacă restaurantul este deschis, calculează prețul și trimite comanda la plată și la curier.",
+  zi:"Construiește API-uri prin care frontendul cere și trimite date, lucrează cu baze de date și se asigură că aplicația funcționează corect și când o folosesc mulți utilizatori simultan.",
+  fit:"Îți plac logica și structura.",
+  start:"Un limbaj de backend (de exemplu Java, C#, Python, Go sau JavaScript cu Node.js) și programarea orientată pe obiecte, baze de date SQL și NoSQL, apoi un API mic cu bază de date.",
+  ov:["fs","arh","dataeng","devops"],t:"st",e:1,l:["logica"]},
+ {id:"fs",f:"dev",n:"Fullstack developer",s:"Lucrează atât pe frontend, cât și pe backend.",
+  app:"Implementează complet feature-ul „Comandă din nou”: butonul din interfață și logica din server.",
+  zi:"Lucrează pe ambele părți ale aplicației, de obicei cu mai multă experiență pe una dintre ele.",
+  fit:"Vrei să implementezi un feature complet, nu doar o parte din el.",
+  start:"Începe cu frontend sau backend, apoi adaugă cealaltă parte. Folosirea aceluiași limbaj pe ambele părți (de exemplu TypeScript) simplifică învățarea.",
+  ov:["fe","be"],t:"up",e:1,l:["vizual","logica"]},
+ {id:"mob",f:"dev",n:"Mobile developer",s:"Construiește aplicațiile pentru telefon.",
+  app:"Aplicația pentru iOS și Android, notificările și harta cu poziția curierului.",
+  zi:"Similar cu frontendul, dar pentru telefon: lucrează cu GPS-ul, notificările, camera, funcționarea fără internet și regulile App Store și Google Play.",
+  fit:"Te interesează aplicațiile mobile.",
+  start:"Alege o platformă (iOS sau Android) sau un framework pentru amândouă (Flutter, React Native) și publică o aplicație mică.",
+  ov:["fe","ux"],t:"st",e:1,l:["vizual","logica"]},
+ {id:"emb",f:"dev",n:"Embedded developer",s:"Scrie software care rulează direct pe dispozitive fizice.",
+  app:"Software-ul din imprimanta de bonuri a restaurantului sau din dispozitivul GPS al curierului.",
+  zi:"Scrie cod pentru dispozitive cu memorie și putere de calcul limitate. În România, o mare parte din posturi sunt în industria auto.",
+  fit:"Te interesează legătura dintre software și hardware.",
+  start:"C, apoi proiecte pe o placă de dezvoltare (de exemplu Arduino, ESP32 sau Raspberry Pi Pico) cu senzori.",
+  ov:["be","appsec"],t:"up",e:1,l:["hardware","logica"]},
+ {id:"game",f:"dev",n:"Game developer",s:"Dezvoltă jocuri: mecanici, fizică, grafică.",
+  app:"Un mini-joc din aplicație prin care utilizatorii câștigă vouchere.",
+  zi:"Programează comportamentul personajelor și al lumii din joc și optimizează jocul pentru a rula fluid pe dispozitive diferite.",
+  fit:"Te interesează jocurile și ai o bază bună de matematică.",
+  start:"Un game engine (de exemplu Godot, Unity sau Unreal) și câteva jocuri mici finalizate.",
+  ov:["fe","ux"],t:"st",e:1,l:["vizual","logica"]},
+
+ {id:"devops",f:"infra",n:"DevOps engineer",s:"Automatizează drumul codului de la developer până în production.",
+  app:"Când un developer face merge la o modificare, aceasta trece automat prin build, teste și deploy.",
+  zi:"Construiește pipeline-uri CI/CD, împachetează aplicațiile în containere (de obicei cu Docker) și descrie serverele și rețelele în cod (Infrastructure as Code, de exemplu cu Terraform) în loc să le configureze manual.",
+  fit:"Îți place să automatizezi procese.",
+  start:"Linux, Git, containere (Docker) și un furnizor de cloud, apoi un pipeline care publică automat un proiect propriu. Rar este primul job; de obicei se ajunge din dezvoltare sau din administrare de sisteme.",
+  why:"Rolul evoluează spre platform engineering, iar o parte din task-uri sunt preluate de developeri.",
+  ov:["cloud","sre","plat","be"],t:"chg",e:0,l:["automat"]},
+ {id:"cloud",f:"infra",n:"Cloud engineer",s:"Construiește și administrează infrastructura din cloud.",
+  app:"Configurează în cloud (AWS, Azure sau Google Cloud) serverele, bazele de date și rețeaua pe care rulează aplicația.",
+  zi:"Proiectează rețele, drepturi de acces și backup-uri. Urmărește costurile, pentru că o configurare greșită în cloud poate genera costuri mari.",
+  fit:"Te interesează cum funcționează sistemele mari și rețelele.",
+  start:"Un furnizor de cloud ales și o certificare de bază pe el (de exemplu AWS Cloud Practitioner, Azure Fundamentals sau Google Cloud Digital Leader), apoi proiecte proprii în cloud.",
+  ov:["devops","arh","appsec"],t:"st",e:0,l:["automat","logica"]},
+ {id:"sre",f:"infra",n:"Site Reliability Engineer (SRE)",s:"Se asigură că aplicația funcționează constant și o repune rapid în funcțiune când are probleme.",
+  app:"Când comenzile nu mai funcționează, identifică problema (de exemplu, o bază de date plină) și o rezolvă.",
+  zi:"Configurează monitoring și alerting, stabilește SLO-uri (ținte de uptime), scrie postmortem-uri după incidente ca să nu se repete. Include de obicei ture de on-call.",
+  fit:"Îți place să investighezi probleme tehnice sub presiune.",
+  start:"De obicei după câțiva ani ca developer sau DevOps. Linux și rețelistică la nivel avansat.",
+  ov:["devops","plat","be"],t:"st",e:0,l:["investighez","automat"]},
+ {id:"plat",f:"infra",n:"Platform engineer",s:"Construiește o platformă internă (internal developer platform) prin care developerii își fac singuri deploy-ul.",
+  app:"Un portal intern din care un developer creează un serviciu nou și primește automat repository, pipeline, server și monitorizare.",
+  zi:"Standardizează infrastructura pentru toate echipele, ca fiecare să nu o configureze de la zero.",
+  fit:"Îți place să construiești unelte pentru alți developeri.",
+  start:"Se ajunge din DevOps sau backend. Nu este un rol de început.",
+  ov:["devops","sre","arh"],t:"up",e:0,l:["automat","logica"]},
+
+ {id:"da",f:"data",n:"Data analyst",s:"Analizează datele și oferă răspunsuri pentru decizii de business.",
+  app:"Analizează de ce au scăzut comenzile într-un oraș și prezintă rezultatele în rapoarte.",
+  zi:"Scrie interogări SQL, construiește dashboarduri și explică cifrele echipelor de business.",
+  fit:"Îți place să lucrezi cu cifre.",
+  start:"SQL la nivel bun, Excel sau Google Sheets și o unealtă de BI (de exemplu Power BI sau Tableau).",
+  why:"Rapoartele simple se generează tot mai des cu AI. Posturile de junior scad, iar cerințele cresc spre statistică și înțelegerea business-ului.",
+  ov:["ds","dataeng","pm"],t:"chg",e:1,l:["date"]},
+ {id:"dataeng",f:"data",n:"Data engineer",s:"Construiește data pipelines: procesele automate prin care datele sunt colectate, curățate și mutate acolo unde e nevoie de ele.",
+  app:"Adună zilnic comenzile, plățile și traseele curierilor într-un singur loc, pregătite pentru analiză.",
+  zi:"Construiește data pipelines, se asigură că datele nu se pierd și nu se dublează, optimizează procesări pe volume mari.",
+  fit:"Îți place backendul, dar te interesează mai mult datele decât interfața.",
+  start:"SQL și un limbaj de programare (de obicei Python) la nivel bun, apoi un pipeline propriu care preia, transformă și încarcă date automat (ETL).",
+  ov:["be","da","ds"],t:"up",e:1,l:["date","automat"]},
+ {id:"ds",f:"data",n:"Data scientist / ML engineer",s:"Construiește modele care învață din date și fac predicții.",
+  app:"Modelul care estimează timpul de livrare pe baza traficului, vremii și încărcării restaurantului.",
+  zi:"Analizează date, antrenează și testează modele, le pune în producție și urmărește dacă își păstrează acuratețea.",
+  fit:"Îți plac matematica și statistica.",
+  start:"Python (sau R), statistică, apoi machine learning. Multe posturi cer master sau experiență anterioară ca analist.",
+  why:"O parte din proiecte se mută spre AI engineering, adică folosirea modelelor existente în loc de antrenarea unora noi.",
+  ov:["da","ai","dataeng"],t:"chg",e:0,l:["date","logica"]},
+ {id:"ai",f:"data",n:"AI engineer",s:"Construiește aplicații care folosesc modele AI existente (LLM).",
+  app:"Asistentul din aplicație care înțelege cereri precum „ceva vegetarian sub 40 de lei, livrat în 30 de minute”.",
+  zi:"Nu antrenează modele de la zero. Le conectează la datele și uneltele firmei, scrie prompturile, măsoară cât de des greșesc și le îmbunătățește.",
+  fit:"Ești developer și te interesează AI-ul.",
+  start:"O bază solidă de backend, apoi proiecte proprii care folosesc API-urile modelelor.",
+  ov:["be","ds"],t:"up",e:0,l:["logica","date"]},
+
+ {id:"qa",f:"qa",n:"QA / Tester manual",s:"Verifică manual aplicația pentru a găsi erori.",
+  app:"Testează plata de pe un telefon vechi, cu internet slab, în timp ce schimbă adresa de livrare.",
+  zi:"Scrie test cases, testează feature-urile noi și raportează bugurile astfel încât să poată fi reproduse.",
+  fit:"Ești atent la detalii și găsești ușor cazuri neprevăzute.",
+  start:"Încă o cale de intrare în IT, dar cu tot mai puține posturi. Învață din start și bazele automatizării.",
+  why:"Testele repetitive sunt automatizate, iar developerii își scriu singuri testele. Posturile noi de tester manual sunt tot mai puține.",
+  ov:["sdet","pm"],t:"down",e:1,l:["strica"]},
+ {id:"sdet",f:"qa",n:"QA automation / SDET",s:"Scrie cod care testează automat aplicația.",
+  app:"Un test care deschide aplicația, plasează o comandă și o plătește, rulat automat de zeci de ori pe zi.",
+  zi:"Construiește teste automate pentru interfață, API și performanță, le integrează în pipeline și ajută developerii să scrie teste bune.",
+  fit:"Îți plac atât programarea, cât și găsirea problemelor.",
+  start:"Bazele programării într-un limbaj folosit în testare (de exemplu TypeScript, Java sau Python), apoi o unealtă de automatizare (de exemplu Playwright, Cypress sau Selenium) pe un site real.",
+  ov:["qa","devops","be"],t:"up",e:1,l:["strica","automat"]},
+
+ {id:"appsec",f:"sec",n:"Security engineer / AppSec",s:"Se asigură că aplicația este sigură încă din faza de dezvoltare.",
+  app:"Verifică că un utilizator nu poate vedea comenzile altui utilizator.",
+  zi:"Revizuiește codul și arhitectura din punct de vedere al securității, configurează scanări automate și instruiește developerii.",
+  fit:"Te gândești cum ar putea fi folosit abuziv un sistem.",
+  start:"De obicei după câțiva ani ca developer. OWASP Top 10 și cunoașterea în detaliu a aplicațiilor web.",
+  ov:["be","pent","devops"],t:"up",e:0,l:["strica","logica"]},
+ {id:"soc",f:"sec",n:"SOC analyst",s:"Monitorizează sistemele și reacționează la atacuri (blue team).",
+  app:"Detectează un atac în care se încearcă mii de parole pe conturile clienților și îl blochează.",
+  zi:"Analizează alertele, separă alarmele false de atacurile reale și investighează incidentele. Se lucrează des în ture.",
+  fit:"Îți place să investighezi.",
+  start:"Rețelistică și Linux, apoi o certificare de bază (ex. CompTIA Security+). Una dintre principalele căi de intrare în securitate.",
+  ov:["pent","sre"],t:"up",e:1,l:["investighez"]},
+ {id:"pent",f:"sec",n:"Penetration tester",s:"Testează sistemele atacându-le, cu acordul firmei, pentru a găsi vulnerabilități (red team).",
+  app:"Încearcă să acceseze datele clienților sau să plaseze comenzi fără plată, apoi raportează cum a reușit.",
+  zi:"Testează aplicații și rețele și scrie rapoarte cu vulnerabilitățile găsite și modul de remediere.",
+  fit:"Îți place să găsești puncte slabe în sisteme.",
+  start:"Rețelistică, Linux și aplicații web. Exersează pe platforme precum TryHackMe și Hack The Box. Certificarea OSCP este recunoscută în domeniu.",
+  ov:["appsec","soc"],t:"st",e:0,l:["strica","investighez"]},
+ {id:"grc",f:"sec",n:"Specialist GRC / conformitate",s:"Se asigură că firma respectă legislația și standardele de securitate.",
+  app:"Pregătește firma pentru audituri și documentează cum sunt protejate datele clienților.",
+  zi:"Scrie politici, evaluează riscuri, coordonează audituri și transformă cerințele legale în task-uri pentru echipele tehnice.",
+  fit:"Îți place să lucrezi cu reguli și procese, fără să programezi neapărat.",
+  start:"Accesibil dinspre drept, audit sau management. Certificările ISO 27001 sunt un avantaj.",
+  ov:["appsec","pm"],t:"up",e:1,l:["oameni"]},
+
+ {id:"ux",f:"prod",n:"UX / UI designer",s:"Stabilește cum arată aplicația și cât de ușor este de folosit.",
+  app:"Proiectează ecranul de plată astfel încât orice utilizator să poată finaliza comanda fără dificultăți.",
+  zi:"Face user research, wireframes și prototipuri, testează variante și pregătește designul pentru developeri.",
+  fit:"Te interesează modul în care oamenii folosesc aplicațiile.",
+  start:"O unealtă de design (de obicei Figma), principii de UX și un portofoliu cu câteva proiecte explicate.",
+  why:"Multe firme folosesc design systems existente și unelte AI care generează interfețe, iar o parte din design este făcută de developeri frontend și de product manageri. Posturile de junior sunt puține.",
+  ov:["fe","pm"],t:"down",e:1,l:["vizual","oameni"]},
+ {id:"pm",f:"prod",n:"Product manager",s:"Decide ce se construiește și în ce ordine.",
+  app:"Decide ce feature se dezvoltă luna aceasta, pe baza datelor și a feedbackului clienților.",
+  zi:"Discută cu clienții, cu business-ul și cu echipa, prioritizează feature-urile și măsoară impactul celor lansate.",
+  fit:"Îți place să iei decizii și să coordonezi oameni.",
+  start:"Rar este primul job. Se ajunge de obicei din QA, BA, design sau dezvoltare.",
+  ov:["po","ux","da","em"],t:"st",e:0,l:["oameni"]},
+ {id:"po",f:"prod",n:"Product owner",s:"Gestionează backlog-ul echipei și scrie cerințele.",
+  app:"Scrie user stories pentru feature-ul de împărțire a notei și stabilește ordinea task-urilor din sprint.",
+  zi:"Prioritizează backlog-ul, scrie user stories și răspunde la întrebările echipei despre cerințe.",
+  fit:"Îți place să organizezi și să clarifici cerințe.",
+  start:"Se ajunge de obicei din BA, QA sau dezvoltare.",
+  why:"Rolul este comasat tot mai des cu cel de product manager.",
+  ov:["pm","ba"],t:"down",e:0,l:["oameni"]},
+ {id:"ba",f:"prod",n:"Business analyst",s:"Transformă nevoile business-ului în cerințe clare pentru echipa tehnică.",
+  app:"Stabilește împreună cu restaurantele cum trebuie să primească acestea comenzile și documentează cerințele.",
+  zi:"Workshop-uri cu stakeholderii, documentarea proceselor, diagrame, clarificări cu echipa tehnică.",
+  fit:"Îți place să clarifici și să structurezi informații.",
+  start:"Accesibil dinspre un domeniu de business (bănci, logistică). Certificările IIBA (de exemplu ECBA sau CCBA) sunt un avantaj.",
+  why:"Cerințele sunt scrise tot mai des de product manageri sau de developeri, cu ajutorul AI. Rămâne nevoie în domenii complexe și reglementate.",
+  ov:["pm","po","qa"],t:"down",e:1,l:["oameni"]},
+ {id:"sm",f:"prod",n:"Scrum master",s:"Organizează procesul de lucru al echipei după metodologia Scrum.",
+  app:"Organizează sprint planning-ul și retrospectivele echipei care dezvoltă aplicația.",
+  zi:"Conduce ceremoniile Scrum (daily, planning, retro), elimină blocajele și urmărește respectarea procesului.",
+  fit:"Îți place să organizezi echipe și procese.",
+  start:"Certificările de Scrum (ex. PSM) sunt cerința uzuală, dar posturile noi sunt puține.",
+  why:"Echipele își organizează singure procesul, iar task-urile rămase sunt preluate de engineering manageri sau tech leads.",
+  ov:["em","tl"],t:"down",e:1,l:["oameni"]},
+
+ {id:"arh",f:"arh",n:"Software architect",s:"Stabilește structura sistemului și modul în care componentele comunică.",
+  app:"Decide ca plățile să fie un serviciu separat, pentru ca o problemă la recomandări să nu blocheze comenzile.",
+  zi:"Proiectează sisteme, compară variante tehnice și compromisurile lor, documentează deciziile și ajută echipele să le implementeze.",
+  fit:"Îți place să ai imaginea de ansamblu și să compari variante.",
+  start:"După mulți ani ca developer. Experiența cu sisteme reale contează mai mult decât cursurile.",
+  ov:["be","cloud","tl"],t:"st",e:0,l:["logica"]},
+ {id:"tl",f:"arh",n:"Tech lead",s:"Conduce tehnic o echipă și continuă să scrie cod.",
+  app:"Împarte un feature nou în task-uri, face code review și ajută colegii blocați.",
+  zi:"Împarte timpul între cod, planificare tehnică, code review și mentorat.",
+  fit:"Ești developer cu experiență și îți place să îi ajuți pe ceilalți.",
+  start:"Pasul următor după senior, pentru cine vrea și responsabilități de coordonare.",
+  ov:["arh","em"],t:"st",e:0,l:["oameni","logica"]},
+ {id:"em",f:"arh",n:"Engineering manager",s:"Conduce oamenii și procesele unei echipe tehnice.",
+  app:"Se asigură că echipa aplicației are oamenii potriviți și livrează la timp.",
+  zi:"Întâlniri 1:1, angajări, procese, feedback, coordonare cu alte echipe. Scrie puțin sau deloc cod.",
+  fit:"Te interesează mai mult dezvoltarea oamenilor decât scrierea de cod.",
+  start:"De obicei după rolul de tech lead.",
+  ov:["tl","pm"],t:"st",e:0,l:["oameni"]}
+];
+
+const TK={
+ swe:[["Limbaj de programare","Unul sau câteva, în funcție de firmă și proiect: Java, C#, Python, Go, JavaScript/TypeScript, Kotlin, PHP, C++ etc."],
+  ["Framework","Specific limbajului: Spring (Java), .NET (C#), Django sau FastAPI (Python), Node.js (JavaScript). Pentru interfețe: React, Angular, Vue."],
+  ["Baze de date","Relaționale, interogate cu SQL (PostgreSQL, MySQL, SQL Server, Oracle), sau NoSQL (MongoDB, Redis, Cassandra, DynamoDB), în funcție de tipul datelor."],
+  ["Testare","Framework-ul de unit testing al limbajului: JUnit (Java), pytest (Python), xUnit sau NUnit (C#), Jest sau Vitest (JavaScript), pachetul testing (Go)."],
+  ["Version control","Git, folosit aproape peste tot. Codul stă pe GitHub, GitLab, Bitbucket sau Azure DevOps."],
+  ["Containere","Docker, ca aplicația să ruleze la fel pe orice mașină."],
+  ["Asistenți de cod","Claude Code, GitHub Copilot, Cursor și altele."]],
+ fe:[["Bazele web","HTML, CSS și JavaScript. TypeScript în majoritatea proiectelor noi."],
+  ["Framework de interfață","De obicei unul dintre React, Angular, Vue sau Svelte. React are cele mai multe anunțuri, dar multe firme folosesc Angular."],
+  ["Meta-framework","Next.js (peste React), Nuxt (peste Vue) și altele, pentru randare pe server și rutare."],
+  ["Stilizare","CSS simplu, Sass, Tailwind sau biblioteci de componente precum Material UI."],
+  ["Testare","Jest sau Vitest pentru unit teste, Playwright sau Cypress pentru teste end-to-end."],
+  ["Design","Lucrul cu designul primit de la designer, de obicei în Figma."]],
+ be:[["Limbaj și framework","Perechi frecvente: Java cu Spring, C# cu .NET, Python cu Django sau FastAPI, JavaScript/TypeScript cu Node.js, Go, PHP cu Laravel. O firmă are de obicei unul principal."],
+  ["Baze de date relaționale (SQL)","PostgreSQL, MySQL, SQL Server, Oracle. Pentru date structurate, cu relații clare: clienți, comenzi, plăți."],
+  ["Baze de date NoSQL","MongoDB (documente), Redis (cache), Cassandra sau DynamoDB (volume foarte mari). Pentru date flexibile sau acces foarte rapid."],
+  ["Comunicare între servicii","REST API, GraphQL sau gRPC. Pentru mesaje asincrone: Kafka, RabbitMQ."],
+  ["Testare","Framework-ul de unit testing al limbajului (JUnit, pytest, xUnit etc.) și teste de integrare."],
+  ["Containere","Docker. Frecvent, aplicația rulează în Kubernetes."]],
+ fs:[["Frontend","Un framework de interfață: React, Angular, Vue etc."],
+  ["Backend","Un limbaj de backend. Des se folosește JavaScript/TypeScript cu Node.js, ca să fie același limbaj pe ambele părți, dar și Java, C#, Python și altele."],
+  ["Baze de date","SQL sau NoSQL, ca la backend."],
+  ["Meta-framework","Next.js, Nuxt și altele care combină frontend și backend în același proiect."],
+  ["Deploy","Docker și un cloud sau o platformă de hosting (Vercel, Netlify etc.)."]],
+ mob:[["Nativ iOS","Swift, cu SwiftUI sau UIKit."],
+  ["Nativ Android","Kotlin, cu Jetpack Compose."],
+  ["Cross-platform","O singură bază de cod pentru ambele platforme: Flutter (limbajul Dart), React Native (JavaScript/TypeScript), Kotlin Multiplatform."],
+  ["Backend pentru mobile","API-uri REST sau GraphQL, Firebase, notificări push."],
+  ["Publicare","App Store și Google Play, fiecare cu procesul lui de review."]],
+ emb:[["Limbaje","În principal C și C++. Rust este tot mai folosit."],
+  ["Hardware","Microcontrolere (STM32, ESP32, familii auto precum Infineon AURIX), senzori, protocoale de comunicare (CAN, I2C, SPI, UART)."],
+  ["Sisteme de operare","Un RTOS (FreeRTOS, Zephyr etc.) sau Linux embedded."],
+  ["Standarde de industrie","În auto: AUTOSAR și ISO 26262. Alte domenii (medical, industrial) au standardele lor."],
+  ["Unelte","Debugger hardware, osciloscop, simulatoare."]],
+ game:[["Game engine","Unity (C#), Unreal Engine (C++ și Blueprints) sau Godot (GDScript sau C#)."],
+  ["Matematică","Vectori, matrici, fizică de bază."],
+  ["Grafică","Shadere, randare, optimizare de performanță."],
+  ["Platforme","PC, console, mobile, fiecare cu limitările ei."]],
+ devops:[["Sistem de operare","Linux."],
+  ["CI/CD","O unealtă de pipeline: GitHub Actions, GitLab CI, Jenkins, Azure DevOps, CircleCI etc."],
+  ["Containere și orchestrare","Docker pentru containere, Kubernetes pentru rularea lor pe mai multe servere."],
+  ["Infrastructure as Code","Terraform (sau OpenTofu), Pulumi, ori unealta furnizorului: CloudFormation (AWS), Bicep (Azure)."],
+  ["Configurare servere","Ansible, Chef, Puppet."],
+  ["Scripting","Bash, Python sau Go."],
+  ["Cloud","De obicei unul dintre AWS, Azure, Google Cloud."]],
+ cloud:[["Furnizor de cloud","De obicei te specializezi pe unul: AWS, Azure sau Google Cloud. Conceptele sunt similare, numele serviciilor diferă."],
+  ["Infrastructure as Code","Terraform sau unealta nativă a furnizorului (CloudFormation, Bicep)."],
+  ["Rețelistică","Rețele virtuale, DNS, load balancere, firewall."],
+  ["Securitate și acces","IAM (drepturi de acces), managementul secretelor."],
+  ["Containere","Docker și Kubernetes. EKS, AKS și GKE sunt variantele de Kubernetes gestionate de AWS, Azure și Google."],
+  ["Costuri","Urmărirea și optimizarea costurilor (FinOps)."]],
+ sre:[["Monitoring și observability","Prometheus și Grafana, Datadog, New Relic, OpenTelemetry, ELK etc."],
+  ["Alerting și on-call","PagerDuty, Opsgenie sau echivalente."],
+  ["Infrastructură","Linux, Kubernetes, un furnizor de cloud."],
+  ["Programare","De obicei Go sau Python, pentru unelte și automatizări."],
+  ["Practici","SLO-uri, postmortem-uri, testare de reziliență."]],
+ plat:[["Orchestrare","Kubernetes."],
+  ["Portal intern","Backstage sau soluții similare."],
+  ["GitOps","Argo CD sau Flux, care aplică automat în Kubernetes ce e descris în Git."],
+  ["Infrastructure as Code","Terraform, Pulumi, Crossplane."],
+  ["Programare","De obicei Go sau Python."]],
+ da:[["SQL","Unealta principală: interogarea bazelor de date."],
+  ["Spreadsheet","Excel sau Google Sheets."],
+  ["BI / dashboarduri","Una dintre Power BI, Tableau, Looker, Metabase."],
+  ["Programare","Python (cu pandas) sau R, pentru analize mai complexe."],
+  ["Statistică","Noțiuni de bază: medii, distribuții, corelații."]],
+ dataeng:[["Limbaje","SQL și Python. Uneori Scala sau Java."],
+  ["Procesare","Apache Spark pentru volume mari, dbt pentru transformări în SQL."],
+  ["Orchestrare","Airflow, Dagster sau Prefect, care rulează pipeline-urile la ora și în ordinea corectă."],
+  ["Stocare","Data warehouse sau lakehouse: Snowflake, BigQuery, Databricks, Redshift."],
+  ["Streaming","Kafka sau echivalente, pentru date în timp real."]],
+ ds:[["Limbaj","Python în majoritatea cazurilor. R în zona academică și statistică."],
+  ["Biblioteci de date","pandas, NumPy, Polars."],
+  ["Machine learning","scikit-learn pentru modele clasice, PyTorch sau TensorFlow pentru rețele neuronale."],
+  ["Mediu de lucru","Jupyter notebooks."],
+  ["MLOps","MLflow, Weights & Biases, pentru urmărirea experimentelor și a modelelor."]],
+ ai:[["Limbaj","De obicei Python sau TypeScript."],
+  ["Modele","API-urile furnizorilor (Anthropic, OpenAI, Google) sau modele open source rulate pe infrastructura proprie."],
+  ["RAG și căutare","Embeddings și baze de date vectoriale (pgvector, Pinecone, Weaviate etc.)."],
+  ["Unelte și agenți","Tool calling, MCP, SDK-urile furnizorilor sau framework-uri precum LangChain și LlamaIndex."],
+  ["Evaluare","Evals: seturi de teste care măsoară calitatea răspunsurilor."]],
+ qa:[["Management de teste","Jira, cu TestRail, Xray, Zephyr Scale sau ceva similar."],
+  ["Testare API","Postman, Insomnia sau echivalente."],
+  ["Browser","DevTools, pentru a vedea erori și cereri către server."],
+  ["Tipuri de testare","Funcțională, de regresie, exploratorie, de compatibilitate."]],
+ sdet:[["Limbaj","De obicei același cu al echipei de dezvoltare: TypeScript/JavaScript, Java, Python sau C#."],
+  ["Teste UI / end-to-end","Playwright, Cypress sau Selenium pentru web; Appium pentru mobile."],
+  ["Teste API","Postman, REST Assured (Java) sau bibliotecile HTTP ale limbajului folosit."],
+  ["Unit testing","Framework-ul limbajului: JUnit, pytest, NUnit, Jest etc."],
+  ["Performanță","k6, JMeter, Gatling."],
+  ["CI/CD","Integrarea testelor în pipeline, ca să ruleze la fiecare modificare."]],
+ appsec:[["Standarde","OWASP Top 10, OWASP ASVS."],
+  ["Scanare automată","SAST pentru cod (SonarQube, Semgrep, Checkmarx), DAST pentru aplicația care rulează (OWASP ZAP, Burp Suite), SCA pentru biblioteci vulnerabile (Snyk, Dependabot)."],
+  ["Threat modeling","Analiza riscurilor încă de la proiectarea unui sistem."],
+  ["Programare","Limbajele folosite de echipele cu care lucrează."]],
+ soc:[["SIEM","Splunk, Microsoft Sentinel, Elastic, QRadar etc."],
+  ["EDR","CrowdStrike, Microsoft Defender, SentinelOne etc."],
+  ["Rețelistică","Analiza traficului, de exemplu cu Wireshark."],
+  ["Framework de referință","MITRE ATT&CK, catalogul tehnicilor de atac."]],
+ pent:[["Sistem de operare","Kali Linux sau Parrot OS."],
+  ["Web","Burp Suite, OWASP ZAP."],
+  ["Rețea","Nmap, Wireshark, Metasploit."],
+  ["Scripting","Python, Bash."],
+  ["Certificări","eJPT pentru început, OSCP ca standard în industrie."]],
+ grc:[["Standarde","ISO 27001, SOC 2, NIST."],
+  ["Legislație","GDPR, NIS2, DORA (sectorul financiar), AI Act."],
+  ["Unelte","Platforme GRC (Vanta, Drata, OneTrust) sau Excel și Confluence în firmele mai mici."]],
+ ux:[["Design","Figma, cel mai folosit. Mai rar Sketch sau Adobe XD."],
+  ["Research","Interviuri, teste de utilizabilitate, analytics."],
+  ["Design system","Componente și reguli vizuale refolosite în toată aplicația."],
+  ["Accesibilitate","Standardul WCAG."]],
+ pm:[["Planificare","Jira, Linear, Productboard, roadmap-uri."],
+  ["Analytics","Amplitude, Mixpanel, Google Analytics, SQL de bază."],
+  ["Experimente","A/B testing."],
+  ["Documentare","Confluence, Notion."]],
+ po:[["Backlog","Jira, Azure DevOps sau echivalente."],
+  ["Documentare","Confluence, Notion."],
+  ["Formate","User stories, criterii de acceptanță."]],
+ ba:[["Documentare","Confluence, Notion, Word."],
+  ["Modelare procese","BPMN, UML, desenate în Visio, draw.io, Lucidchart etc."],
+  ["Date","SQL de bază, Excel."],
+  ["Task-uri","Jira, Azure DevOps."]],
+ sm:[["Metodologii","Scrum, Kanban."],
+  ["Unelte","Jira sau Azure DevOps, Miro pentru retrospective."],
+  ["Certificări","PSM, CSM."]],
+ arh:[["Documentare","Diagrame C4, UML, ADR-uri."],
+  ["Stiluri de arhitectură","Monolit, microservicii, event-driven, serverless, și când se potrivește fiecare."],
+  ["Cloud","Serviciile unui furnizor (AWS, Azure, Google Cloud)."],
+  ["Integrare","REST, gRPC, cozi de mesaje (Kafka, RabbitMQ)."],
+  ["Principii de design","Design patterns, principiile SOLID, clean code."],
+  ["Stack","Cel puțin un stack de backend cunoscut în profunzime."]],
+ tl:[["Stack","Tehnologiile echipei, la nivel de senior."],
+  ["Code review","Standarde de cod (clean code, design patterns) și review-uri."],
+  ["Planificare tehnică","Estimări, împărțirea feature-urilor în task-uri, ADR-uri."]],
+ em:[["Oameni","1:1, feedback, evaluări de performanță, recrutare."],
+  ["Procese","Scrum sau Kanban, metrici de livrare (ex. DORA metrics)."],
+  ["Unelte","Jira, Confluence, Linear."]]
+};
+
+const GL=[
+ ["Bazele",[
+  ["Limbaj de programare","Limbajul în care se scriu instrucțiunile pentru calculator, de exemplu Java, Python sau JavaScript.",["limbaj de programare","Un limbaj de programare"]],
+  ["Cod sursă","Textul scris de programatori, din care este construită aplicația.",["codul sursă","cod sursă"]],
+  ["Framework","Structură gata făcută peste care se construiește o aplicație. Îți impune o organizare și rezolvă părțile comune (navigare, acces la baza de date, securitate), ca tu să scrii doar logica specifică. Exemple: Spring, Angular, Django.",["framework","Framework-ul","Framework-uri"]],
+  ["Bibliotecă (library)","Cod gata scris pe care îl folosești pentru o sarcină anume, de exemplu lucrul cu date sau grafice. Diferența față de un framework: tu apelezi biblioteca atunci când ai nevoie, pe când framework-ul stabilește structura și îți apelează el codul.",["bibliotecă","biblioteci","bibliotecile","Bibliotecă"]],
+  ["SDK","Set de unelte și biblioteci oferit de o firmă ca să poți folosi produsul ei din cod."],
+  ["IDE","Editorul în care programatorii scriu cod, cu completare automată și depanare. Exemple: VS Code, IntelliJ IDEA, Visual Studio."],
+  ["Terminal","Fereastra în care dai comenzi calculatorului scriind text, fără interfață grafică.",["terminal","terminalul"]],
+  ["Server","Calculator, de obicei în cloud, care rulează aplicația și răspunde la cererile utilizatorilor.",["server","serverul","servere","serverele"]],
+  ["Client","Programul care cere date de la server: browserul sau aplicația de pe telefon."],
+  ["Frontend / Backend","Frontend este partea pe care o vede utilizatorul; backend este partea care rulează pe server."],
+  ["API","Interfața prin care două programe comunică. Aplicația de pe telefon cere lista de restaurante de la server printr-un API."],
+  ["Endpoint","O adresă anume dintr-un API, de exemplu /comenzi."],
+  ["HTTP / HTTPS","Protocolul prin care browserul și aplicațiile comunică cu serverele. HTTPS este varianta criptată.",["HTTP","HTTPS"]],
+  ["JSON","Format text simplu pentru date, folosit de majoritatea API-urilor."],
+  ["Bază de date","Locul în care datele aplicației sunt stocate organizat: utilizatori, comenzi, produse.",["bază de date","baze de date","baza de date","bazele de date","Baze de date"]],
+  ["Cache","Copie temporară a unor date, păstrată aproape de aplicație ca să fie returnată mai repede.",["cache"]],
+  ["Open source","Software al cărui cod este public și poate fi folosit și modificat gratuit, de exemplu Linux sau PostgreSQL.",["open source"]],
+  ["Stack","Setul de tehnologii folosit într-un proiect, de exemplu React, Node.js și PostgreSQL.",["stack","Stack-ul"]]]],
+ ["Concepte de programare",[
+  ["Tip de date","Felul unei valori: număr, text, adevărat/fals, listă. Unele limbaje verifică tipurile înainte de rulare (Java, C#, TypeScript), altele abia în timpul rulării (Python, JavaScript).",["tipuri de date"]],
+  ["Funcție","Bucată de cod cu nume, care primește date, face ceva și returnează un rezultat. Poate fi apelată de oricâte ori."],
+  ["Algoritm","Pașii prin care un program rezolvă o problemă, de exemplu sortarea unei liste sau găsirea celui mai scurt drum pentru curier.",["algoritmi","algoritmii"]],
+  ["Structuri de date","Moduri de a organiza datele în memorie: liste, dicționare (hash map), arbori, grafuri. Alegerea potrivită face programul mai rapid.",["structuri de date","structurile de date"]],
+  ["Complexitate (Big O)","Mod de a descrie cât de mult crește timpul de rulare când cresc datele, de exemplu O(n) sau O(n²). Apare des la interviuri.",["Big O"]],
+  ["Programare orientată pe obiecte (OOP)","Mod de a organiza codul în obiecte care au atât date, cât și comportament. De exemplu, un obiect Comandă are produse și preț, plus o metodă plătește(). Este stilul principal în Java, C#, Kotlin și foarte folosit în Python, TypeScript și altele.",["OOP","programarea orientată pe obiecte","programare orientată pe obiecte"]],
+  ["Clasă și obiect","Clasa este șablonul (Comandă), iar obiectul este un exemplar concret creat după el (comanda nr. 1234).",["clasă","clase"]],
+  ["Încapsulare, moștenire, polimorfism","Ideile de bază ale OOP. Încapsulare: obiectul își ascunde detaliile interne și expune doar ce e nevoie. Moștenire: o clasă preia comportamentul alteia (PlatăCard preia de la Plată). Polimorfism: obiecte diferite răspund la aceeași comandă în felul lor (plătește() funcționează diferit pentru card și pentru numerar).",["încapsulare","moștenire","polimorfism"]],
+  ["Programare funcțională","Stil de programare în care codul este construit din funcții care nu modifică datele existente, ci produc date noi. Ideile ei sunt folosite azi în aproape toate limbajele (JavaScript, Kotlin, Scala, C#, Java).",["programarea funcțională","programare funcțională"]],
+  ["Programare asincronă","Codul pornește o operație lentă, de exemplu o cerere către server, și continuă cu altceva până vine răspunsul, în loc să aștepte blocat.",["asincrone","asincron"]],
+  ["Compilat vs. interpretat","Un limbaj compilat (C, C++, Go, Rust) este transformat în cod mașină înainte de rulare. Unul interpretat (Python, JavaScript) este executat de un program intermediar în timpul rulării. Java și C# sunt la mijloc: sunt compilate într-un format intermediar, rulat apoi de o mașină virtuală."],
+  ["Design patterns","Soluții standard, cu nume, pentru probleme care apar des în cod, de exemplu Singleton, Factory sau Observer.",["design patterns"]],
+  ["SOLID","Cinci principii de proiectare a codului orientat pe obiecte, care îl fac mai ușor de modificat și de testat."],
+  ["Clean code","Cod ușor de citit și de modificat de altcineva: nume clare, funcții scurte, fără repetiții.",["clean code"]]]],
+ ["Cod și livrare",[
+  ["Repository","Locul în care este păstrat codul unui proiect, împreună cu istoricul lui.",["repository"]],
+  ["Commit","O modificare salvată în Git, cu un mesaj care descrie ce s-a schimbat."],
+  ["Branch","O copie separată a codului în care lucrezi fără să afectezi codul principal."],
+  ["Merge","Unirea modificărilor dintr-un branch în codul principal.",["merge"]],
+  ["Pull request (PR)","Cererea ca o modificare de cod să fie verificată de colegi și adăugată în codul principal.",["pull requesturi","pull request"]],
+  ["Code review","Verificarea codului de către colegi înainte să fie adăugat în aplicație.",["code review"]],
+  ["Build","Transformarea codului sursă într-o aplicație care poate rula.",["build"]],
+  ["Deploy","Publicarea unei versiuni noi a aplicației pe un mediu (de exemplu staging sau production).",["deploy"]],
+  ["CI/CD","Proces automat: la fiecare modificare, codul este testat (CI, continuous integration) și publicat (CD, continuous delivery) fără pași manuali."],
+  ["Pipeline","Succesiunea de pași automați prin care trece codul: build, teste, deploy.",["pipeline","pipeline-uri","pipeline-urile"]],
+  ["Medii (environments)","Locuri separate în care rulează aplicația: dev pentru dezvoltare, staging pentru verificare, production pentru clienți.",["staging"]],
+  ["Production","Mediul real în care aplicația este folosită de clienți.",["production"]],
+  ["Release","O versiune nouă a aplicației, lansată către utilizatori.",["Release-uri","release"]],
+  ["Hotfix","Reparație urgentă a unui bug din production, publicată în afara ciclului normal."],
+  ["Bug","O eroare în aplicație: aplicația face altceva decât ar trebui.",["buguri","bugurile","Bugurile"]],
+  ["Debug","Procesul de găsire a cauzei unui bug.",["debug"]],
+  ["Refactoring","Rescrierea codului ca să fie mai clar, fără să i se schimbe comportamentul."],
+  ["Technical debt","Compromisuri tehnice făcute ca să se livreze mai repede, care trebuie reparate mai târziu."],
+  ["Legacy","Cod sau sistem vechi, încă folosit, de obicei greu de modificat."]]],
+ ["Infrastructură și operare",[
+  ["Cloud","Servere și servicii închiriate de la furnizori precum Amazon, Microsoft sau Google.",["cloud"]],
+  ["Container","O aplicație împachetată împreună cu tot ce are nevoie pentru a rula.",["container","containere","containerele"]],
+  ["Mașină virtuală (VM)","Un calculator simulat prin software, care rulează pe un server fizic alături de alte mașini virtuale."],
+  ["Load balancer","Împarte traficul între mai multe servere, ca niciunul să nu fie supraîncărcat.",["load balancere","load balancer"]],
+  ["DNS","Sistemul care transformă un nume de site (de exemplu exemplu.ro) în adresa serverului."],
+  ["Scalabilitate","Capacitatea aplicației de a face față la mai mulți utilizatori prin adăugarea de resurse."],
+  ["Uptime / downtime","Timpul în care aplicația funcționează, respectiv timpul în care nu funcționează.",["uptime","downtime"]],
+  ["Log","Mesajele pe care o aplicație le scrie în timp ce rulează, folosite la investigarea problemelor.",["loguri","logurile","logurilor"]],
+  ["Metrici","Valori măsurate continuu despre aplicație: cereri pe secundă, timp de răspuns, erori.",["metrici","metricile","metricilor"]],
+  ["Monitoring și alerting","Urmărirea continuă a aplicației (monitoring) și trimiterea de alerte când ceva nu e în regulă (alerting).",["monitoring","alerting"]],
+  ["Incident","O problemă în production care afectează utilizatorii.",["incident","incidente","incidentele","incidentelor"]],
+  ["On-call","Tură de gardă: persoana de serviciu intervine dacă aplicația are probleme în afara programului.",["on-call"]],
+  ["Backup","Copie de siguranță a datelor, din care se pot recupera dacă se pierd.",["backup","backup-uri"]],
+  ["SaaS","Software as a Service: aplicație folosită direct din browser, pe abonament, fără instalare. Exemple: Jira, Slack."],
+  ["IoT","Internet of Things: dispozitive fizice conectate la internet, precum senzori, camere sau electrocasnice."]]],
+ ["Securitate",[
+  ["Autentificare / autorizare","Autentificarea verifică cine ești (cont, parolă); autorizarea verifică ce ai voie să faci.",["autentificare","autorizare"]],
+  ["Criptare","Transformarea datelor astfel încât să poată fi citite doar de cine are cheia.",["criptare","criptată"]],
+  ["Vulnerabilitate","O slăbiciune într-un sistem pe care o poate folosi un atacator.",["vulnerabilitate","vulnerabilități","vulnerabilitățile"]],
+  ["Exploit","Codul sau metoda prin care se folosește o vulnerabilitate.",["exploit"]],
+  ["Phishing","Mesaje false care încearcă să păcălească oamenii să-și dea parolele sau să deschidă fișiere periculoase."],
+  ["Blue team / red team","Blue team apără sistemele și răspunde la atacuri; red team simulează atacuri, cu acordul firmei.",["blue team","red team"]]]],
+ ["Date și AI",[
+  ["Machine learning","Programe care învață reguli din exemple, în loc să fie programate explicit.",["machine learning"]],
+  ["Prompt","Instrucțiunea sau întrebarea trimisă unui model AI.",["prompturile","prompt"]],
+  ["Data pipeline","Proces automat care mută și transformă date dintr-un loc în altul.",["data pipelines"]],
+  ["ETL","Extract, Transform, Load: preluarea datelor dintr-o sursă, transformarea lor și încărcarea în alt loc."],
+  ["Data warehouse","Bază de date centrală în care se adună datele firmei pentru analiză.",["data warehouse"]],
+  ["Dashboard","Ecran cu grafice și cifre care arată o situație dintr-o privire.",["dashboard","dashboarduri","dashboardurile"]]]],
+ ["Echipă și produs",[
+  ["Agile","Mod de lucru în etape scurte, cu livrări dese și ajustări pe parcurs. Scrum și Kanban sunt cele mai folosite variante."],
+  ["Sprint","Perioadă fixă de lucru, de obicei de două săptămâni, la finalul căreia echipa livrează ceva.",["sprint","sprintului","sprinturi"]],
+  ["Daily standup","Întâlnire scurtă zilnică în care fiecare spune la ce lucrează și ce îl blochează.",["daily"]],
+  ["Retrospectivă","Întâlnire la finalul unui sprint despre ce a mers bine și ce trebuie îmbunătățit.",["retrospective","retrospectivele","retro"]],
+  ["Backlog","Lista de task-uri și feature-uri pe care echipa urmează să le facă.",["backlog","backlog-ul"]],
+  ["User story","Cerință scrisă din perspectiva utilizatorului: „Ca client, vreau să..., ca să...”.",["user stories","User stories"]],
+  ["Criterii de acceptanță","Condițiile concrete pe care trebuie să le îndeplinească un feature ca să fie considerat gata.",["criterii de acceptanță"]],
+  ["Estimare","Aprecierea efortului necesar pentru un task, uneori în story points în loc de ore."],
+  ["Stakeholder","Orice persoană interesată de un proiect: client, manager, alt departament.",["stakeholderii","stakeholder"]],
+  ["Roadmap","Planul cu ce se va construi în următoarele luni.",["roadmap-uri","roadmap"]],
+  ["MVP","Minimum Viable Product: prima versiune, cât mai simplă, a unui produs, lansată ca să vezi dacă are succes."],
+  ["Feature","O funcționalitate a aplicației, de exemplu „Comandă din nou”."],
+  ["1:1","Discuție periodică între un manager și un membru al echipei, despre progres, probleme și dezvoltare."]]]
+];
+
+const TECH=[
+ ["Limbaje de programare",[
+  ["JavaScript","Limbajul care rulează în browser. Aproape orice pagină web interactivă îl folosește; cu Node.js rulează și pe server."],
+  ["TypeScript","JavaScript cu tipuri de date verificate înainte de rulare. Standardul actual pentru proiecte web mari."],
+  ["Python","Limbaj ușor de citit, folosit în date, AI, automatizări, testare și backend."],
+  ["Java","Limbaj folosit mult pentru backend în firme mari, bănci și sisteme enterprise. De obicei cu framework-ul Spring."],
+  ["C#","Limbajul Microsoft, folosit pentru backend (cu .NET), aplicații desktop și jocuri (cu Unity)."],
+  ["Go","Limbaj creat de Google, folosit pentru servicii backend rapide și unelte de infrastructură (Docker și Kubernetes sunt scrise în Go)."],
+  ["PHP","Limbaj de backend pentru web, folosit de multe site-uri și de WordPress. De obicei cu framework-ul Laravel."],
+  ["Kotlin","Limbajul principal pentru aplicații Android. Se folosește și pentru backend."],
+  ["Swift","Limbajul Apple pentru aplicații iOS și macOS."],
+  ["Dart","Limbajul folosit de Flutter."],
+  ["C","Limbaj vechi și foarte apropiat de hardware. Baza în embedded și în sisteme de operare."],
+  ["C++","Extensie a limbajului C, folosită în embedded, jocuri, browsere și sisteme unde contează viteza."],
+  ["Rust","Limbaj modern pentru aceleași zone ca C și C++, cu mai puține erori de memorie."],
+  ["Scala","Limbaj care rulează pe aceeași platformă ca Java, folosit mai ales în procesarea de date (Spark)."],
+  ["R","Limbaj pentru statistică și analiză de date, folosit mult în mediul academic."],
+  ["GDScript","Limbajul de scripting al motorului de jocuri Godot, asemănător cu Python."],
+  ["SQL","Limbajul cu care se citesc și se modifică datele din bazele de date relaționale (PostgreSQL, MySQL, SQL Server, Oracle etc.)."],
+  ["Bash","Limbaj de scripting pentru terminalul Linux, folosit la automatizări."]]],
+ ["Frontend și mobile",[
+  ["HTML","Structura unei pagini web: titluri, texte, butoane, formulare."],
+  ["CSS","Aspectul unei pagini web: culori, dimensiuni, așezare în pagină."],
+  ["Sass","CSS cu variabile și funcții, transformat apoi în CSS obișnuit."],
+  ["Tailwind","Bibliotecă CSS cu clase predefinite pentru stilizare rapidă."],
+  ["Material UI","Bibliotecă de componente gata făcute (butoane, tabele, formulare) pentru React."],
+  ["React","Bibliotecă JavaScript pentru interfețe, creată de Meta. Cea mai folosită în prezent."],
+  ["Angular","Framework de frontend de la Google, folosit mult în proiecte enterprise."],
+  ["Vue","Framework de frontend mai ușor de învățat, popular în proiecte mici și medii."],
+  ["Svelte","Framework de frontend mai nou, care generează cod foarte ușor."],
+  ["Next.js","Framework construit peste React, care adaugă partea de server și navigarea între pagini."],
+  ["Nuxt","Echivalentul lui Next.js pentru Vue."],
+  ["SwiftUI","Modul modern de a construi interfețe pentru iOS, în Swift."],
+  ["UIKit","Modul mai vechi de a construi interfețe pentru iOS, încă folosit în multe aplicații."],
+  ["Jetpack Compose","Modul modern de a construi interfețe pentru Android, în Kotlin."],
+  ["Flutter","Framework Google cu care scrii o singură aplicație, în Dart, care rulează pe iOS și Android."],
+  ["React Native","Același scop ca Flutter, dar folosind React și JavaScript/TypeScript."],
+  ["Kotlin Multiplatform","Permite folosirea aceluiași cod Kotlin pe Android, iOS și alte platforme."],
+  ["Firebase","Platformă Google cu servicii gata făcute pentru aplicații: autentificare, bază de date, notificări."],
+  ["Vercel","Platformă de hosting pentru aplicații web, cu deploy automat din Git."],
+  ["Netlify","Platformă de hosting asemănătoare cu Vercel."]]],
+ ["Backend",[
+  ["Spring","Framework-ul standard pentru backend în Java."],
+  [".NET","Platforma Microsoft pentru backend și aplicații în C#."],
+  ["Node.js","Permite rularea JavaScript pe server, nu doar în browser."],
+  ["Django","Framework de backend complet în Python."],
+  ["FastAPI","Framework de backend în Python, mai mic, folosit des pentru API-uri."],
+  ["Laravel","Framework-ul cel mai folosit pentru backend în PHP."],
+  ["REST API","Modul cel mai comun prin care frontendul și backendul schimbă date, prin cereri HTTP.",["REST"]],
+  ["GraphQL","Alternativă la REST în care clientul cere exact câmpurile de care are nevoie."],
+  ["gRPC","Mod rapid de comunicare între servicii, folosit mai ales intern, între servere."],
+  ["Kafka","Sistem prin care serviciile își trimit mesaje și evenimente în timp real, la volume foarte mari."],
+  ["RabbitMQ","Coadă de mesaje: un serviciu lasă un mesaj, altul îl preia când poate."]]],
+ ["Baze de date",[
+  ["Baze de date relaționale","Datele stau în tabele legate între ele și sunt interogate cu SQL. Exemple: PostgreSQL, MySQL, SQL Server, Oracle.",["relaționale"]],
+  ["Baze de date NoSQL","Baze de date care nu folosesc tabele relaționale: documente (MongoDB), cheie-valoare (Redis), coloane (Cassandra). Alese pentru date flexibile sau volume foarte mari.",["NoSQL"]],
+  ["PostgreSQL","Bază de date relațională, open source și foarte folosită."],
+  ["MySQL","Bază de date relațională open source, foarte răspândită în aplicațiile web."],
+  ["SQL Server","Baza de date relațională a Microsoft, folosită des cu .NET."],
+  ["Oracle","Bază de date relațională comercială, folosită mult în bănci și firme mari."],
+  ["MongoDB","Bază de date NoSQL care stochează documente JSON în loc de rânduri în tabele."],
+  ["Redis","Bază de date NoSQL în memorie, foarte rapidă, folosită de obicei ca cache."],
+  ["Cassandra","Bază de date NoSQL pentru volume foarte mari de date, distribuite pe multe servere."],
+  ["DynamoDB","Bază de date NoSQL oferită de AWS."]]],
+ ["Infrastructură și cloud",[
+  ["Linux","Sistemul de operare pe care rulează majoritatea serverelor."],
+  ["Docker","Împachetează o aplicație împreună cu tot ce are nevoie (biblioteci, configurări) într-un container, astfel încât să ruleze identic pe orice server."],
+  ["Kubernetes","Gestionează multe containere pe mai multe servere: le pornește, le repornește când se opresc și adaugă copii când crește traficul."],
+  ["EKS","Kubernetes gestionat de AWS."],["AKS","Kubernetes gestionat de Azure."],["GKE","Kubernetes gestionat de Google Cloud."],
+  ["AWS","Amazon Web Services, cel mai mare furnizor de cloud."],
+  ["Azure","Cloud-ul Microsoft, folosit mult de firmele care lucrează deja cu produse Microsoft."],
+  ["Google Cloud","Cloud-ul Google, puternic în date și AI."],
+  ["Infrastructure as Code","Infrastructura (servere, rețele, baze de date) este descrisă în fișiere de cod, în loc să fie configurată manual."],
+  ["Terraform","Cea mai folosită unealtă de Infrastructure as Code. Funcționează cu toți furnizorii de cloud."],
+  ["OpenTofu","Variantă open source a lui Terraform."],
+  ["Pulumi","Infrastructure as Code scris în limbaje obișnuite de programare (TypeScript, Python, Go)."],
+  ["CloudFormation","Unealta de Infrastructure as Code proprie AWS."],
+  ["Bicep","Unealta de Infrastructure as Code proprie Azure."],
+  ["Crossplane","Gestionează infrastructura din cloud prin Kubernetes."],
+  ["Ansible","Configurează automat servere existente: instalează programe și aplică setări."],
+  ["Chef","Unealtă de configurare a serverelor, asemănătoare cu Ansible."],
+  ["Puppet","Unealtă de configurare a serverelor, asemănătoare cu Ansible."],
+  ["IAM","Sistemul de drepturi de acces din cloud: cine are voie să facă ce."],
+  ["FinOps","Urmărirea și optimizarea costurilor din cloud."]]],
+ ["Cod, CI/CD și colaborare",[
+  ["Git","Sistemul care păstrează istoricul modificărilor din cod și permite lucrul în paralel."],
+  ["GitHub","Platforma cea mai folosită pentru găzduirea codului, cu pull requesturi și code review."],
+  ["GitLab","Platformă asemănătoare cu GitHub, folosită des în firme, inclusiv instalată pe servere proprii."],
+  ["Bitbucket","Platforma de cod a Atlassian, folosită împreună cu Jira."],
+  ["Azure DevOps","Platforma Microsoft pentru cod, pipeline-uri și task-uri."],
+  ["GitHub Actions","Pipeline-uri CI/CD integrate în GitHub."],
+  ["GitLab CI","Pipeline-uri CI/CD integrate în GitLab."],
+  ["Jenkins","Unealtă CI/CD mai veche, open source, încă folosită în multe firme."],
+  ["CircleCI","Serviciu CI/CD în cloud."],
+  ["Argo CD","Publică automat în Kubernetes configurația descrisă în Git (GitOps)."],
+  ["Flux","Unealtă GitOps asemănătoare cu Argo CD."],
+  ["Backstage","Portal intern pentru developeri, cu serviciile, documentația și uneltele firmei. Creat de Spotify."],
+  ["Jira","Unealta în care echipa își gestionează task-urile."],
+  ["Confluence","Platforma în care echipa își ține documentația."],
+  ["Notion","Aplicație pentru documentație și notițe, folosită ca alternativă la Confluence."],
+  ["Linear","Unealtă de task-uri, alternativă mai simplă la Jira."],
+  ["Miro","Tablă albă online pentru workshop-uri și retrospective."],
+  ["Claude Code","Asistent de cod de la Anthropic, care lucrează direct în proiect și în terminal."],
+  ["GitHub Copilot","Asistent de cod de la GitHub, integrat în editor."],
+  ["Cursor","Editor de cod construit în jurul unui asistent AI."]]],
+ ["Monitoring",[
+  ["Prometheus","Colectează metrici de la aplicații și servere, de exemplu numărul de cereri pe secundă sau memoria folosită."],
+  ["Grafana","Afișează metricile în grafice și dashboarduri."],
+  ["Datadog","Platformă comercială completă de monitoring și loguri."],
+  ["New Relic","Platformă comercială de monitoring, asemănătoare cu Datadog."],
+  ["OpenTelemetry","Standard pentru colectarea logurilor, metricilor și traseului cererilor dintr-o aplicație."],
+  ["ELK","Elasticsearch, Logstash și Kibana: colectarea, căutarea și afișarea logurilor."],
+  ["PagerDuty","Trimite alertele către persoana de on-call și gestionează turele."],
+  ["Opsgenie","Unealtă de alerting și on-call, asemănătoare cu PagerDuty."],
+  ["SLO","Service Level Objective: ținta de funcționare a unui serviciu, de exemplu 99,9% din timp disponibil."],
+  ["Postmortem","Analiza scrisă după un incident: ce s-a întâmplat, de ce și ce se schimbă ca să nu se repete.",["postmortem"]]]],
+ ["Testare",[
+  ["Framework de unit testing","Fiecare limbaj are al lui: JUnit (Java), pytest (Python), xUnit sau NUnit (C#), Jest sau Vitest (JavaScript), pachetul testing (Go).",["unit testing"]],
+  ["JUnit","Framework-ul de unit testing pentru Java."],
+  ["pytest","Framework-ul de unit testing cel mai folosit în Python."],
+  ["xUnit","Framework de unit testing pentru C#."],
+  ["NUnit","Framework de unit testing pentru C#, alternativă la xUnit."],
+  ["Jest","Framework de unit testing pentru JavaScript și TypeScript."],
+  ["Vitest","Alternativă mai nouă și mai rapidă la Jest."],
+  ["Playwright","Controlează automat un browser pentru teste end-to-end. Cea mai folosită unealtă de acest tip acum."],
+  ["Cypress","Unealtă de teste end-to-end în browser, populară în proiectele JavaScript."],
+  ["Selenium","Unealta mai veche pentru teste automate în browser, încă folosită în multe firme."],
+  ["Appium","Unealtă pentru teste automate pe aplicații mobile."],
+  ["Postman","Trimite cereri către un API și verifică răspunsurile. Folosit atât manual, cât și automat."],
+  ["Insomnia","Alternativă la Postman."],
+  ["REST Assured","Bibliotecă Java pentru teste automate de API."],
+  ["k6","Teste de performanță: simulează mii de utilizatori simultan. Testele se scriu în JavaScript."],
+  ["JMeter","Unealtă mai veche pentru teste de performanță."],
+  ["Gatling","Unealtă pentru teste de performanță, alternativă la k6 și JMeter."],
+  ["TestRail","Aplicație în care se țin test cases și rezultatele testelor."],
+  ["Xray","Plugin de Jira pentru test cases."],
+  ["Zephyr Scale","Plugin de Jira pentru test cases, alternativă la Xray."]]],
+ ["Date",[
+  ["Excel","Spreadsheet-ul Microsoft, încă folosit peste tot pentru analize rapide."],
+  ["Google Sheets","Spreadsheet-ul Google, asemănător cu Excel."],
+  ["Power BI","Unealta Microsoft pentru rapoarte și dashboarduri."],
+  ["Tableau","Unealtă pentru rapoarte și dashboarduri, alternativă la Power BI."],
+  ["Looker","Unealta Google pentru rapoarte și dashboarduri."],
+  ["Metabase","Unealtă open source pentru dashboarduri."],
+  ["pandas","Bibliotecă Python pentru lucrul cu tabele de date."],
+  ["NumPy","Bibliotecă Python pentru calcule numerice."],
+  ["Polars","Alternativă mai rapidă la pandas."],
+  ["Jupyter","Mediu în care scrii cod Python pas cu pas și vezi imediat rezultatul."],
+  ["Apache Spark","Procesează volume foarte mari de date pe mai multe calculatoare în paralel.",["Spark"]],
+  ["dbt","Transformă datele din data warehouse cu SQL, cu teste și versionare."],
+  ["Airflow","Programează și rulează data pipelines la ora și în ordinea corectă."],
+  ["Dagster","Alternativă mai nouă la Airflow."],
+  ["Prefect","Alternativă mai nouă la Airflow."],
+  ["Snowflake","Data warehouse în cloud: stocare și analiză pentru volume mari de date."],
+  ["BigQuery","Data warehouse-ul Google Cloud."],
+  ["Redshift","Data warehouse-ul AWS."],
+  ["Databricks","Platformă cloud pentru date și machine learning, construită în jurul lui Spark."],
+  ["scikit-learn","Bibliotecă Python pentru machine learning clasic."],
+  ["PyTorch","Biblioteca principală pentru rețele neuronale."],
+  ["TensorFlow","Bibliotecă Google pentru rețele neuronale, alternativă la PyTorch."],
+  ["MLflow","Urmărește experimentele și versiunile modelelor de machine learning."],
+  ["Weights & Biases","Platformă pentru urmărirea experimentelor de machine learning."]]],
+ ["AI",[
+  ["LLM","Model mare de limbaj, tipul de AI din spatele asistenților precum Claude sau ChatGPT."],
+  ["RAG","Tehnică prin care modelul AI caută mai întâi în documentele firmei și răspunde pe baza lor."],
+  ["Embeddings","Transformarea unui text într-o listă de numere care îi reprezintă sensul, ca să poată fi comparat cu alte texte.",["embeddings"]],
+  ["Baze de date vectoriale","Stochează embeddings și permit căutarea după sens, nu după cuvinte exacte.",["baze de date vectoriale"]],
+  ["pgvector","Extensie care adaugă căutare vectorială în PostgreSQL."],
+  ["Pinecone","Bază de date vectorială în cloud."],
+  ["Weaviate","Bază de date vectorială open source."],
+  ["Tool calling","Capacitatea unui model AI de a apela funcții și unelte externe, de exemplu o căutare în baza de date."],
+  ["MCP","Model Context Protocol: standard prin care un model AI se conectează la unelte și surse de date externe."],
+  ["LangChain","Framework pentru aplicații cu LLM-uri."],
+  ["LlamaIndex","Framework pentru aplicații cu LLM-uri, axat pe RAG."],
+  ["Evals","Seturi de teste care măsoară cât de des răspunde corect un sistem AI."]]],
+ ["Securitate",[
+  ["OWASP Top 10","Lista celor mai frecvente vulnerabilități ale aplicațiilor web."],
+  ["OWASP ASVS","Listă detaliată de cerințe de securitate pentru aplicații."],
+  ["OWASP ZAP","Unealtă open source pentru scanarea de securitate a aplicațiilor web."],
+  ["SAST","Analiza automată a codului sursă după vulnerabilități."],
+  ["DAST","Testarea automată a aplicației care rulează, din exterior, după vulnerabilități."],
+  ["SCA","Verificarea bibliotecilor folosite de aplicație după vulnerabilități cunoscute."],
+  ["SonarQube","Analizează codul și găsește probleme de calitate și de securitate."],
+  ["Semgrep","Unealtă SAST open source."],
+  ["Checkmarx","Unealtă SAST comercială."],
+  ["Snyk","Găsește vulnerabilități în bibliotecile folosite și în cod."],
+  ["Dependabot","Unealtă GitHub care propune automat actualizarea bibliotecilor vulnerabile."],
+  ["Burp Suite","Interceptează traficul dintre browser și server, pentru testare de securitate."],
+  ["Threat modeling","Analiza riscurilor de securitate încă de la proiectarea unui sistem."],
+  ["SIEM","Sistem care adună logurile din toată firma și generează alerte de securitate."],
+  ["Splunk","Unul dintre cele mai folosite SIEM-uri."],
+  ["Microsoft Sentinel","SIEM-ul Microsoft, în Azure."],
+  ["Elastic","Platformă de căutare și loguri, folosită și ca SIEM."],
+  ["QRadar","SIEM folosit în firme mari."],
+  ["EDR","Software instalat pe calculatoare și servere care detectează comportament suspect."],
+  ["CrowdStrike","Una dintre cele mai folosite soluții EDR."],
+  ["Microsoft Defender","Soluția EDR a Microsoft."],
+  ["SentinelOne","Soluție EDR, alternativă la CrowdStrike."],
+  ["MITRE ATT&CK","Catalog public al tehnicilor folosite de atacatori."],
+  ["Kali Linux","Distribuție Linux cu uneltele de testare a securității preinstalate."],
+  ["Parrot OS","Distribuție Linux pentru securitate, alternativă la Kali."],
+  ["Nmap","Scanează o rețea și arată ce servere și servicii sunt accesibile."],
+  ["Wireshark","Capturează și afișează traficul de rețea."],
+  ["Metasploit","Framework care conține exploit-uri gata făcute pentru vulnerabilități cunoscute."],
+  ["TryHackMe","Platformă online de exerciții de securitate, potrivită pentru început."],
+  ["Hack The Box","Platformă online de exerciții de securitate, mai avansată."],
+  ["CompTIA Security+","Certificare de bază în securitate, recunoscută internațional."],
+  ["eJPT","Certificare de început în penetration testing."],
+  ["OSCP","Certificare practică de penetration testing, foarte respectată."]]],
+ ["Conformitate și standarde",[
+  ["ISO 27001","Standard internațional pentru gestionarea securității informației. Firmele se certifică pe el."],
+  ["SOC 2","Standard american de audit pentru securitatea furnizorilor de servicii."],
+  ["NIST","Institut american care publică standarde și ghiduri de securitate folosite peste tot."],
+  ["GDPR","Regulamentul UE privind protecția datelor personale."],
+  ["NIS2","Directivă UE care obligă firmele din domenii importante (energie, sănătate, transport, digital) să-și asigure securitatea cibernetică."],
+  ["DORA","Regulament UE privind reziliența digitală în sectorul financiar."],
+  ["AI Act","Regulamentul UE care stabilește reguli pentru sistemele AI, în funcție de risc."],
+  ["ISO 26262","Standardul de siguranță funcțională pentru software-ul din mașini."],
+  ["Vanta","Platformă care automatizează pregătirea pentru audituri (SOC 2, ISO 27001)."],
+  ["Drata","Platformă asemănătoare cu Vanta."],
+  ["OneTrust","Platformă pentru conformitate și protecția datelor."]]],
+ ["Embedded și jocuri",[
+  ["Microcontrolere","Calculatoare foarte mici, pe un singur cip, folosite în dispozitive."],
+  ["STM32","Familie de microcontrolere foarte folosită în industrie."],
+  ["ESP32","Microcontroler ieftin, cu WiFi și Bluetooth, popular în proiecte IoT."],
+  ["Arduino","Plăci de dezvoltare simple, potrivite pentru început."],
+  ["Raspberry Pi Pico","Placă de dezvoltare ieftină, cu microcontroler."],
+  ["CAN","Protocolul prin care comunică între ele componentele electronice dintr-o mașină."],
+  ["I2C","Protocol simplu prin care un microcontroler comunică cu senzori."],
+  ["SPI","Protocol rapid de comunicare între cipuri."],
+  ["UART","Protocol serial simplu, folosit des pentru debug."],
+  ["RTOS","Sistem de operare în timp real, pentru dispozitive care trebuie să răspundă într-un timp garantat."],
+  ["FreeRTOS","Cel mai folosit RTOS open source."],
+  ["Zephyr","RTOS open source susținut de Linux Foundation."],
+  ["AUTOSAR","Standardul de arhitectură software din industria auto."],
+  ["Unity","Game engine care folosește C#, foarte răspândit, inclusiv pe mobile."],
+  ["Unreal Engine","Game engine care folosește C++ și Blueprints, pentru grafică avansată.",["Unreal"]],
+  ["Blueprints","Programare vizuală în Unreal Engine, prin blocuri legate între ele."],
+  ["Godot","Game engine open source, potrivit pentru început."]]],
+ ["Arhitectură, produs și procese",[
+  ["Monolit","Aplicație construită ca un singur bloc. Este adesea alegerea potrivită la început."],
+  ["Microservicii","Aplicație împărțită în servicii mici și independente, de exemplu plăți, comenzi și livrare.",["microservicii"]],
+  ["Event-driven","Arhitectură în care serviciile reacționează la evenimente (de exemplu „comandă plasată”) în loc să se apeleze direct.",["event-driven"]],
+  ["Serverless","Codul rulează doar când e apelat, fără servere administrate de tine. Plătești per execuție.",["serverless"]],
+  ["Diagrame C4","Mod standard de a desena arhitectura unui sistem pe patru niveluri de detaliu."],
+  ["UML","Notație standard pentru diagrame de sisteme și de clase."],
+  ["BPMN","Notație standard pentru diagrame de procese de business."],
+  ["ADR","Architecture Decision Record: document scurt care înregistrează o decizie tehnică și motivul ei."],
+  ["Visio","Aplicația Microsoft pentru diagrame."],
+  ["draw.io","Aplicație gratuită pentru diagrame."],
+  ["Lucidchart","Aplicație online pentru diagrame."],
+  ["Amplitude","Arată cum folosesc utilizatorii aplicația: ce apasă, unde renunță."],
+  ["Mixpanel","Unealtă de product analytics, asemănătoare cu Amplitude."],
+  ["Google Analytics","Unealta Google pentru statistici despre vizitatorii unui site sau ai unei aplicații."],
+  ["Productboard","Unealtă pentru gestionarea feedbackului și a roadmap-ului de produs."],
+  ["A/B testing","Două variante ale aceluiași ecran sunt arătate la grupuri diferite de utilizatori, pentru a vedea care funcționează mai bine."],
+  ["Scrum","Mod de lucru în sprinturi scurte, de obicei de două săptămâni, cu roluri și întâlniri fixe."],
+  ["Kanban","Mod de lucru continuu, fără sprinturi: task-urile trec pe o tablă prin coloane (de făcut, în lucru, gata)."],
+  ["PSM","Professional Scrum Master, certificare de Scrum."],
+  ["CSM","Certified ScrumMaster, certificare de Scrum."],
+  ["DORA metrics","Patru metrici standard pentru cât de bine livrează o echipă: frecvența deploy-urilor, timpul până în production, rata de erori, timpul de recuperare."]]]
+];
+const ASPECTS=["Echipe","Produs și design","Dezvoltare","Testare","Infrastructură","Securitate","Date și AI","Conducere"];
+const SIZES=[
+ ["Startup","5 - 30 de oameni",[
+  [[],"1 - 3 echipe mixte. Toată lumea lucrează la tot produsul."],
+  [["pm"],"Fondatorul sau un product manager decide ce se construiește. Designul îl face PM-ul, un freelancer sau developerii."],
+  [["fs","mob"],"Mai ales fullstack, pentru că sunt puțini oameni."],
+  [[],"De obicei fără QA. Developerii își testează singuri codul."],
+  [[],"Un developer se ocupă și de cloud și de deploy, pe lângă cod."],
+  [[],"Fără rol dedicat. Uneori un consultant extern pentru audit."],
+  [[],"Rar există. Rapoartele le face PM-ul, iar partea de AI o fac developerii."],
+  [["tl"],"CTO-ul sau un tech lead conduce toată partea tehnică."]]],
+ ["Firmă medie","30 - 300 de oameni",[
+  [[],"Mai multe echipe de produs, fiecare pe o parte a aplicației (de exemplu Comenzi, Plăți, Livrare)."],
+  [["pm","ux"],"Un PM pe echipă sau la două echipe. Câțiva designeri împărțiți între echipe."],
+  [["fe","be","fs","mob"],"Developeri specializați, dar și fullstack."],
+  [["sdet","qa"],"QA în unele echipe, tot mai mult pe automatizare."],
+  [["devops","cloud"],"O echipă mică de DevOps și cloud pentru toată firma."],
+  [["appsec"],"Unul sau doi oameni pe securitate, plus audituri externe."],
+  [["da","dataeng"],"Câțiva oameni pe date și rapoarte."],
+  [["tl","em"],"Tech lead în fiecare echipă, engineering manageri pentru mai multe echipe."]]],
+ ["Firmă mare","300+ oameni",[
+  [[],"Zeci de echipe de produs, plus echipe comune care lucrează pentru toate."],
+  [["pm","po","ux","ba"],"PM și designer în fiecare echipă. Uneori PO și BA separat, mai ales în bănci și corporații."],
+  [["fe","be","mob","emb"],"Roluri foarte specializate."],
+  [["sdet","qa"],"QA automation în echipe, uneori și o echipă separată pentru performanță."],
+  [["plat","sre","cloud"],"Echipe separate de platformă, SRE și cloud."],
+  [["appsec","soc","pent","grc"],"Departament propriu de securitate, cu SOC și conformitate."],
+  [["dataeng","da","ds","ai"],"Echipe dedicate de date și de AI."],
+  [["tl","em","arh"],"Arhitecți, engineering manageri pe mai multe niveluri, staff engineers."]]]
+];
+
+const UI={
+ rolesN:n=>`${n} roluri →`, all:"Toate", entryYes:"accesibil la început", entryNo:"necesită experiență",
+ statusLikes:h=>`${h} ${h===1?"rol corespunde":"roluri corespund"} selecției, afișate primele.`,
+ statusFam:(n,f)=>`${n} roluri în ${f}.`, statusAll:n=>`${n} roluri.`,
+ close:"Închide", why:"Ce se schimbă la acest rol", app:"Exemplu în aplicația de livrare", zi:"Ce face zi de zi",
+ tech:"Tehnologii, pe categorii", techNote:"Pentru fiecare categorie există mai multe variante. O firmă folosește de obicei una sau două, nu pe toate. Apasă pe un nume subliniat ca să vezi ce este.",
+ fit:"Potrivit dacă", start:"Cum începi", ov:"Roluri apropiate",
+ seeIn:sec=>`Vezi în ${sec==="glosar"?"Glosar":"Tehnologii, pe scurt"} →`,
+ noTech:q=>`Nicio tehnologie găsită pentru „${q}”.`, noTerm:q=>`Niciun termen găsit pentru „${q}”.`,
+ noRole:"fără rol dedicat", title:"Harta meseriilor IT"
+};
+const TOCL={harta:"Ariile",roluri:"Rolurile",echipe:"Cum arată o echipă",scadere:"Roluri în scădere",testare:"Testarea",tehnologii:"Tehnologii, pe scurt",tendinte:"Tendințe",crestere:"Niveluri",glosar:"Glosar",start:"Cum începi"};
+return {FAM,FAM_ORDER,LIKES,T,R,TK,GL,TECH,ASPECTS,SIZES,UI,TOCL};
+})();
+DATA.en=(()=>{
+const FAM = {
+  arh:{n:"Architecture and leadership", q:"How is the system organized?", ex:"Example: the decision to make payments a service separate from orders."},
+  prod:{n:"Product and design", q:"What do we build and how does it look?", ex:"Example: which features the app has and how the screens look."},
+  dev:{n:"Development", q:"The application code", ex:"Example: the restaurant menu screen and the delivery cost calculation."},
+  data:{n:"Data and AI", q:"Data and AI", ex:"Example: personalized recommendations and the delivery time estimate."},
+  infra:{n:"Infrastructure", q:"Where does the app run?", ex:"Example: the app servers and the deploy of new versions."},
+  qa:{n:"Quality", q:"Does it work correctly?", ex:"Example: an order is not paid twice."},
+  sec:{n:"Security", q:"Is it secure?", ex:"Example: protecting card data and accounts."}
+};
+const FAM_ORDER=["arh","prod","dev","data","infra","qa","sec"];
+const LIKES = {
+  vizual:"interfaces and design", logica:"programming and logic", date:"data and numbers",
+  strica:"finding problems", automat:"automation", oameni:"working with people",
+  hardware:"hardware", investighez:"investigating incidents"
+};
+const T={up:["growing","up"],st:["stable",""],chg:["changing","chg"],down:["declining","down"]};
+const R = [
+ {id:"swe",f:"dev",n:"Software engineer / developer",s:"The general term for someone who designs, writes and maintains software.",
+  app:"Any part of the application code. Frontend, backend and fullstack are specializations of this role.",
+  zi:"Implements features, writes tests, does code review for colleagues, fixes bugs. In job ads, “software engineer” can mean backend, frontend or fullstack; the specialization is clear from the description. In practice, “engineer” and “developer” are used the same way.",
+  fit:"You like solving problems with code.",
+  start:"A programming language, object-oriented programming, algorithms and data structures, Git, working with databases (SQL and some NoSQL) and the basics of testing. Then choose a specialization.",
+  ov:["fe","be","fs"],t:"st",e:1,l:["logica"]},
+ {id:"fe",f:"dev",n:"Frontend developer",s:"Builds the visible part of a web application.",
+  app:"The restaurants page, the filters, the shopping cart and the payment form.",
+  zi:"Turns the design received from the designer (usually in Figma) into pages that work on phone, tablet and laptop. Connects the interface to the data received from the backend. Fixes display problems between browsers.",
+  fit:"You like to see the result of your work right away and you pay attention to visual details.",
+  start:"HTML, CSS and JavaScript, then an interface framework (for example React, Angular or Vue; React has the most job ads). Publish a few of your own projects online.",
+  ov:["fs","ux","mob"],t:"st",e:1,l:["vizual","logica"]},
+ {id:"be",f:"dev",n:"Backend developer",s:"Writes the application logic that runs on the server.",
+  app:"Receives the order, checks if the restaurant is open, calculates the price and sends the order to payment and to the courier.",
+  zi:"Builds APIs that the frontend uses to request and send data, works with databases and makes sure the application works correctly even when many users use it at the same time.",
+  fit:"You like logic and structure.",
+  start:"A backend language (for example Java, C#, Python, Go or JavaScript with Node.js) and object-oriented programming, SQL and NoSQL databases, then a small API with a database.",
+  ov:["fs","arh","dataeng","devops"],t:"st",e:1,l:["logica"]},
+ {id:"fs",f:"dev",n:"Fullstack developer",s:"Works on both the frontend and the backend.",
+  app:"Fully implements the “Order again” feature: the button in the interface and the logic on the server.",
+  zi:"Works on both parts of the application, usually with more experience in one of them.",
+  fit:"You want to implement a complete feature, not just one part of it.",
+  start:"Start with frontend or backend, then add the other part. Using the same language on both parts (for example TypeScript) makes learning easier.",
+  ov:["fe","be"],t:"up",e:1,l:["vizual","logica"]},
+ {id:"mob",f:"dev",n:"Mobile developer",s:"Builds the apps for phones.",
+  app:"The iOS and Android app, the notifications and the map with the courier's location.",
+  zi:"Similar to frontend, but for phones: works with GPS, notifications, the camera, offline operation and the App Store and Google Play rules.",
+  fit:"You are interested in mobile apps.",
+  start:"Choose a platform (iOS or Android) or a framework for both (Flutter, React Native) and publish a small app.",
+  ov:["fe","ux"],t:"st",e:1,l:["vizual","logica"]},
+ {id:"emb",f:"dev",n:"Embedded developer",s:"Writes software that runs directly on physical devices.",
+  app:"The software in the restaurant's receipt printer or in the courier's GPS device.",
+  zi:"Writes code for devices with limited memory and computing power. In Romania, a large share of jobs are in the automotive industry.",
+  fit:"You are interested in the connection between software and hardware.",
+  start:"C, then projects on a development board (for example Arduino, ESP32 or Raspberry Pi Pico) with sensors.",
+  ov:["be","appsec"],t:"up",e:1,l:["hardware","logica"]},
+ {id:"game",f:"dev",n:"Game developer",s:"Develops games: mechanics, physics, graphics.",
+  app:"A mini-game in the app where users win vouchers.",
+  zi:"Programs the behavior of the characters and of the game world and optimizes the game to run smoothly on different devices.",
+  fit:"You are interested in games and have a good math foundation.",
+  start:"A game engine (for example Godot, Unity or Unreal) and a few small finished games.",
+  ov:["fe","ux"],t:"st",e:1,l:["vizual","logica"]},
+
+ {id:"devops",f:"infra",n:"DevOps engineer",s:"Automates the path of code from the developer to production.",
+  app:"When a developer merges a change, it automatically goes through build, tests and deploy.",
+  zi:"Builds CI/CD pipelines, packages applications in containers (usually with Docker) and describes servers and networks in code (Infrastructure as Code, for example with Terraform) instead of configuring them manually.",
+  fit:"You like automating processes.",
+  start:"Linux, Git, containers (Docker) and a cloud provider, then a pipeline that automatically publishes one of your own projects. It is rarely a first job; people usually come from development or system administration.",
+  why:"The role is moving toward platform engineering, and some tasks are taken over by developers.",
+  ov:["cloud","sre","plat","be"],t:"chg",e:0,l:["automat"]},
+ {id:"cloud",f:"infra",n:"Cloud engineer",s:"Builds and manages the infrastructure in the cloud.",
+  app:"Configures in the cloud (AWS, Azure or Google Cloud) the servers, databases and network the app runs on.",
+  zi:"Designs networks, access rights and backups. Tracks costs, because a wrong configuration in the cloud can generate high costs.",
+  fit:"You are interested in how large systems and networks work.",
+  start:"One chosen cloud provider and a basic certification for it (for example AWS Cloud Practitioner, Azure Fundamentals or Google Cloud Digital Leader), then your own projects in the cloud.",
+  ov:["devops","arh","appsec"],t:"st",e:0,l:["automat","logica"]},
+ {id:"sre",f:"infra",n:"Site Reliability Engineer (SRE)",s:"Makes sure the app works consistently and brings it back up quickly when it has problems.",
+  app:"When orders stop working, finds the problem (for example, a full database) and fixes it.",
+  zi:"Configures monitoring and alerting, sets SLOs (uptime targets), writes postmortems after incidents so they do not happen again. Usually includes on-call shifts.",
+  fit:"You like investigating technical problems under pressure.",
+  start:"Usually after a few years as a developer or DevOps. Linux and networking at an advanced level.",
+  ov:["devops","plat","be"],t:"st",e:0,l:["investighez","automat"]},
+ {id:"plat",f:"infra",n:"Platform engineer",s:"Builds an internal platform (internal developer platform) that developers use to deploy on their own.",
+  app:"An internal portal where a developer creates a new service and automatically gets a repository, pipeline, server and monitoring.",
+  zi:"Standardizes the infrastructure for all teams, so each team does not configure it from scratch.",
+  fit:"You like building tools for other developers.",
+  start:"People come from DevOps or backend. It is not an entry-level role.",
+  ov:["devops","sre","arh"],t:"up",e:0,l:["automat","logica"]},
+
+ {id:"da",f:"data",n:"Data analyst",s:"Analyzes data and provides answers for business decisions.",
+  app:"Analyzes why orders dropped in a city and presents the results in reports.",
+  zi:"Writes SQL queries, builds dashboards and explains the numbers to business teams.",
+  fit:"You like working with numbers.",
+  start:"Good SQL, Excel or Google Sheets and a BI tool (for example Power BI or Tableau).",
+  why:"Simple reports are more and more often generated with AI. Junior positions are decreasing, and requirements are moving toward statistics and understanding the business.",
+  ov:["ds","dataeng","pm"],t:"chg",e:1,l:["date"]},
+ {id:"dataeng",f:"data",n:"Data engineer",s:"Builds data pipelines: the automated processes that collect data, clean it and move it to where it is needed.",
+  app:"Collects the orders, payments and courier routes every day in a single place, ready for analysis.",
+  zi:"Builds data pipelines, makes sure data is not lost or duplicated, optimizes processing of large volumes.",
+  fit:"You like backend, but you are more interested in data than in the interface.",
+  start:"Good SQL and a programming language (usually Python), then your own pipeline that automatically extracts, transforms and loads data (ETL).",
+  ov:["be","da","ds"],t:"up",e:1,l:["date","automat"]},
+ {id:"ds",f:"data",n:"Data scientist / ML engineer",s:"Builds models that learn from data and make predictions.",
+  app:"The model that estimates delivery time based on traffic, weather and how busy the restaurant is.",
+  zi:"Analyzes data, trains and tests models, puts them into production and checks if they stay accurate.",
+  fit:"You like math and statistics.",
+  start:"Python (or R), statistics, then machine learning. Many positions require a master's degree or previous experience as an analyst.",
+  why:"Some projects are moving toward AI engineering, which means using existing models instead of training new ones.",
+  ov:["da","ai","dataeng"],t:"chg",e:0,l:["date","logica"]},
+ {id:"ai",f:"data",n:"AI engineer",s:"Builds applications that use existing AI models (LLMs).",
+  app:"The assistant in the app that understands requests such as “something vegetarian under 40 lei, delivered in 30 minutes”.",
+  zi:"Does not train models from scratch. Connects them to the company's data and tools, writes the prompts, measures how often they make mistakes and improves them.",
+  fit:"You are a developer and you are interested in AI.",
+  start:"A solid backend foundation, then your own projects that use model APIs.",
+  ov:["be","ds"],t:"up",e:0,l:["logica","date"]},
+
+ {id:"qa",f:"qa",n:"QA / Manual tester",s:"Checks the application manually to find errors.",
+  app:"Tests the payment on an old phone, with a weak internet connection, while changing the delivery address.",
+  zi:"Writes test cases, tests new features and reports bugs in a way that allows them to be reproduced.",
+  fit:"You pay attention to details and easily find unexpected cases.",
+  start:"Still a way into IT, but with fewer and fewer positions. Learn the basics of automation from the start.",
+  why:"Repetitive tests are automated, and developers write their own tests. New manual tester positions are fewer and fewer.",
+  ov:["sdet","pm"],t:"down",e:1,l:["strica"]},
+ {id:"sdet",f:"qa",n:"QA automation / SDET",s:"Writes code that tests the application automatically.",
+  app:"A test that opens the app, places an order and pays for it, run automatically dozens of times a day.",
+  zi:"Builds automated tests for the interface, the API and performance, integrates them into the pipeline and helps developers write good tests.",
+  fit:"You like both programming and finding problems.",
+  start:"Programming basics in a language used in testing (for example TypeScript, Java or Python), then an automation tool (for example Playwright, Cypress or Selenium) on a real website.",
+  ov:["qa","devops","be"],t:"up",e:1,l:["strica","automat"]},
+
+ {id:"appsec",f:"sec",n:"Security engineer / AppSec",s:"Makes sure the application is secure starting from the development phase.",
+  app:"Checks that a user cannot see another user's orders.",
+  zi:"Reviews code and architecture from a security point of view, sets up automated scans and trains developers.",
+  fit:"You think about how a system could be abused.",
+  start:"Usually after a few years as a developer. OWASP Top 10 and detailed knowledge of web applications.",
+  ov:["be","pent","devops"],t:"up",e:0,l:["strica","logica"]},
+ {id:"soc",f:"sec",n:"SOC analyst",s:"Monitors systems and responds to attacks (blue team).",
+  app:"Detects an attack that tries thousands of passwords on customer accounts and blocks it.",
+  zi:"Analyzes alerts, separates false alarms from real attacks and investigates incidents. Work is often done in shifts.",
+  fit:"You like investigating.",
+  start:"Networking and Linux, then a basic certification (for example CompTIA Security+). One of the main ways into security.",
+  ov:["pent","sre"],t:"up",e:1,l:["investighez"]},
+ {id:"pent",f:"sec",n:"Penetration tester",s:"Tests systems by attacking them, with the company's permission, to find vulnerabilities (red team).",
+  app:"Tries to access customer data or place orders without paying, then reports how it was done.",
+  zi:"Tests applications and networks and writes reports with the vulnerabilities found and how to fix them.",
+  fit:"You like finding weak points in systems.",
+  start:"Networking, Linux and web applications. Practice on platforms such as TryHackMe and Hack The Box. The OSCP certification is recognized in the field.",
+  ov:["appsec","soc"],t:"st",e:0,l:["strica","investighez"]},
+ {id:"grc",f:"sec",n:"GRC / compliance specialist",s:"Makes sure the company follows the law and security standards.",
+  app:"Prepares the company for audits and documents how customer data is protected.",
+  zi:"Writes policies, assesses risks, coordinates audits and turns legal requirements into tasks for the technical teams.",
+  fit:"You like working with rules and processes, without necessarily programming.",
+  start:"Accessible from law, audit or management. ISO 27001 certifications are an advantage.",
+  ov:["appsec","pm"],t:"up",e:1,l:["oameni"]},
+
+ {id:"ux",f:"prod",n:"UX / UI designer",s:"Decides how the app looks and how easy it is to use.",
+  app:"Designs the payment screen so that any user can complete the order without difficulty.",
+  zi:"Does user research, wireframes and prototypes, tests variants and prepares the design for developers.",
+  fit:"You are interested in how people use apps.",
+  start:"A design tool (usually Figma), UX principles and a portfolio with a few explained projects.",
+  why:"Many companies use existing design systems and AI tools that generate interfaces, and part of the design is done by frontend developers and product managers. Junior positions are few.",
+  ov:["fe","pm"],t:"down",e:1,l:["vizual","oameni"]},
+ {id:"pm",f:"prod",n:"Product manager",s:"Decides what gets built and in what order.",
+  app:"Decides which feature is developed this month, based on data and customer feedback.",
+  zi:"Talks with customers, the business and the team, prioritizes features and measures the impact of the ones launched.",
+  fit:"You like making decisions and coordinating people.",
+  start:"It is rarely a first job. People usually come from QA, BA, design or development.",
+  ov:["po","ux","da","em"],t:"st",e:0,l:["oameni"]},
+ {id:"po",f:"prod",n:"Product owner",s:"Manages the team's backlog and writes the requirements.",
+  app:"Writes user stories for the bill splitting feature and sets the order of the tasks in the sprint.",
+  zi:"Prioritizes the backlog, writes user stories and answers the team's questions about requirements.",
+  fit:"You like organizing and clarifying requirements.",
+  start:"People usually come from BA, QA or development.",
+  why:"The role is more and more often merged with the product manager role.",
+  ov:["pm","ba"],t:"down",e:0,l:["oameni"]},
+ {id:"ba",f:"prod",n:"Business analyst",s:"Turns business needs into clear requirements for the technical team.",
+  app:"Works out with the restaurants how they should receive orders and documents the requirements.",
+  zi:"Workshops with stakeholders, process documentation, diagrams, clarifications with the technical team.",
+  fit:"You like clarifying and structuring information.",
+  start:"Accessible from a business field (banking, logistics). IIBA certifications (for example ECBA or CCBA) are an advantage.",
+  why:"Requirements are more and more often written by product managers or developers, with the help of AI. The need remains in complex and regulated fields.",
+  ov:["pm","po","qa"],t:"down",e:1,l:["oameni"]},
+ {id:"sm",f:"prod",n:"Scrum master",s:"Organizes the team's work process following the Scrum methodology.",
+  app:"Organizes sprint planning and retrospectives for the team that develops the app.",
+  zi:"Leads the Scrum ceremonies (daily, planning, retro), removes blockers and checks that the process is followed.",
+  fit:"You like organizing teams and processes.",
+  start:"Scrum certifications (for example PSM) are the usual requirement, but new positions are few.",
+  why:"Teams organize their own process, and the remaining tasks are taken over by engineering managers or tech leads.",
+  ov:["em","tl"],t:"down",e:1,l:["oameni"]},
+
+ {id:"arh",f:"arh",n:"Software architect",s:"Defines the structure of the system and how the components communicate.",
+  app:"Decides that payments should be a separate service, so that a problem with recommendations does not block orders.",
+  zi:"Designs systems, compares technical options and their trade-offs, documents decisions and helps teams implement them.",
+  fit:"You like seeing the big picture and comparing options.",
+  start:"After many years as a developer. Experience with real systems matters more than courses.",
+  ov:["be","cloud","tl"],t:"st",e:0,l:["logica"]},
+ {id:"tl",f:"arh",n:"Tech lead",s:"Leads a team technically and keeps writing code.",
+  app:"Splits a new feature into tasks, does code review and helps colleagues who are stuck.",
+  zi:"Divides time between code, technical planning, code review and mentoring.",
+  fit:"You are an experienced developer and you like helping others.",
+  start:"The next step after senior, for those who also want coordination responsibilities.",
+  ov:["arh","em"],t:"st",e:0,l:["oameni","logica"]},
+ {id:"em",f:"arh",n:"Engineering manager",s:"Leads the people and processes of a technical team.",
+  app:"Makes sure the app team has the right people and delivers on time.",
+  zi:"1:1 meetings, hiring, processes, feedback, coordination with other teams. Writes little or no code.",
+  fit:"You are more interested in developing people than in writing code.",
+  start:"Usually after the tech lead role.",
+  ov:["tl","pm"],t:"st",e:0,l:["oameni"]}
+];
+
+const TK={
+ swe:[["Programming language","One or a few, depending on the company and project: Java, C#, Python, Go, JavaScript/TypeScript, Kotlin, PHP, C++ etc."],
+  ["Framework","Specific to the language: Spring (Java), .NET (C#), Django or FastAPI (Python), Node.js (JavaScript). For interfaces: React, Angular, Vue."],
+  ["Databases","Relational, queried with SQL (PostgreSQL, MySQL, SQL Server, Oracle), or NoSQL (MongoDB, Redis, Cassandra, DynamoDB), depending on the type of data."],
+  ["Testing","The language's unit testing framework: JUnit (Java), pytest (Python), xUnit or NUnit (C#), Jest or Vitest (JavaScript), the testing package (Go)."],
+  ["Version control","Git, used almost everywhere. The code is stored on GitHub, GitLab, Bitbucket or Azure DevOps."],
+  ["Containers","Docker, so the application runs the same way on any machine."],
+  ["Coding assistants","Claude Code, GitHub Copilot, Cursor and others."]],
+ fe:[["Web basics","HTML, CSS and JavaScript. TypeScript in most new projects."],
+  ["Interface framework","Usually one of React, Angular, Vue or Svelte. React has the most job ads, but many companies use Angular."],
+  ["Meta-framework","Next.js (on top of React), Nuxt (on top of Vue) and others, for server rendering and routing."],
+  ["Styling","Plain CSS, Sass, Tailwind or component libraries such as Material UI."],
+  ["Testing","Jest or Vitest for unit tests, Playwright or Cypress for end-to-end tests."],
+  ["Design","Working with the design received from the designer, usually in Figma."]],
+ be:[["Language and framework","Common pairs: Java with Spring, C# with .NET, Python with Django or FastAPI, JavaScript/TypeScript with Node.js, Go, PHP with Laravel. A company usually has one main one."],
+  ["Relational databases (SQL)","PostgreSQL, MySQL, SQL Server, Oracle. For structured data with clear relationships: customers, orders, payments."],
+  ["NoSQL databases","MongoDB (documents), Redis (cache), Cassandra or DynamoDB (very large volumes). For flexible data or very fast access."],
+  ["Communication between services","REST API, GraphQL or gRPC. For asynchronous messages: Kafka, RabbitMQ."],
+  ["Testing","The language's unit testing framework (JUnit, pytest, xUnit etc.) and integration tests."],
+  ["Containers","Docker. Often, the application runs in Kubernetes."]],
+ fs:[["Frontend","An interface framework: React, Angular, Vue etc."],
+  ["Backend","A backend language. JavaScript/TypeScript with Node.js is often used, so the same language is on both parts, but also Java, C#, Python and others."],
+  ["Databases","SQL or NoSQL, as in backend."],
+  ["Meta-framework","Next.js, Nuxt and others that combine frontend and backend in the same project."],
+  ["Deploy","Docker and a cloud or a hosting platform (Vercel, Netlify etc.)."]],
+ mob:[["Native iOS","Swift, with SwiftUI or UIKit."],
+  ["Native Android","Kotlin, with Jetpack Compose."],
+  ["Cross-platform","A single codebase for both platforms: Flutter (the Dart language), React Native (JavaScript/TypeScript), Kotlin Multiplatform."],
+  ["Backend for mobile","REST or GraphQL APIs, Firebase, push notifications."],
+  ["Publishing","App Store and Google Play, each with its own review process."]],
+ emb:[["Languages","Mainly C and C++. Rust is used more and more."],
+  ["Hardware","Microcontrollers (STM32, ESP32, automotive families such as Infineon AURIX), sensors, communication protocols (CAN, I2C, SPI, UART)."],
+  ["Operating systems","An RTOS (FreeRTOS, Zephyr etc.) or embedded Linux."],
+  ["Industry standards","In automotive: AUTOSAR and ISO 26262. Other fields (medical, industrial) have their own standards."],
+  ["Tools","Hardware debugger, oscilloscope, simulators."]],
+ game:[["Game engine","Unity (C#), Unreal Engine (C++ and Blueprints) or Godot (GDScript or C#)."],
+  ["Math","Vectors, matrices, basic physics."],
+  ["Graphics","Shaders, rendering, performance optimization."],
+  ["Platforms","PC, consoles, mobile, each with its own limitations."]],
+ devops:[["Operating system","Linux."],
+  ["CI/CD","A pipeline tool: GitHub Actions, GitLab CI, Jenkins, Azure DevOps, CircleCI etc."],
+  ["Containers and orchestration","Docker for containers, Kubernetes for running them on multiple servers."],
+  ["Infrastructure as Code","Terraform (or OpenTofu), Pulumi, or the provider's tool: CloudFormation (AWS), Bicep (Azure)."],
+  ["Server configuration","Ansible, Chef, Puppet."],
+  ["Scripting","Bash, Python or Go."],
+  ["Cloud","Usually one of AWS, Azure, Google Cloud."]],
+ cloud:[["Cloud provider","You usually specialize in one: AWS, Azure or Google Cloud. The concepts are similar, the service names differ."],
+  ["Infrastructure as Code","Terraform or the provider's native tool (CloudFormation, Bicep)."],
+  ["Networking","Virtual networks, DNS, load balancers, firewall."],
+  ["Security and access","IAM (access rights), secrets management."],
+  ["Containers","Docker and Kubernetes. EKS, AKS and GKE are the versions of Kubernetes managed by AWS, Azure and Google."],
+  ["Costs","Tracking and optimizing costs (FinOps)."]],
+ sre:[["Monitoring and observability","Prometheus and Grafana, Datadog, New Relic, OpenTelemetry, ELK etc."],
+  ["Alerting and on-call","PagerDuty, Opsgenie or equivalents."],
+  ["Infrastructure","Linux, Kubernetes, a cloud provider."],
+  ["Programming","Usually Go or Python, for tools and automation."],
+  ["Practices","SLOs, postmortems, resilience testing."]],
+ plat:[["Orchestration","Kubernetes."],
+  ["Internal portal","Backstage or similar solutions."],
+  ["GitOps","Argo CD or Flux, which automatically apply in Kubernetes what is described in Git."],
+  ["Infrastructure as Code","Terraform, Pulumi, Crossplane."],
+  ["Programming","Usually Go or Python."]],
+ da:[["SQL","The main tool: querying databases."],
+  ["Spreadsheet","Excel or Google Sheets."],
+  ["BI / dashboards","One of Power BI, Tableau, Looker, Metabase."],
+  ["Programming","Python (with pandas) or R, for more complex analyses."],
+  ["Statistics","Basic concepts: averages, distributions, correlations."]],
+ dataeng:[["Languages","SQL and Python. Sometimes Scala or Java."],
+  ["Processing","Apache Spark for large volumes, dbt for transformations in SQL."],
+  ["Orchestration","Airflow, Dagster or Prefect, which run the pipelines at the right time and in the right order."],
+  ["Storage","Data warehouse or lakehouse: Snowflake, BigQuery, Databricks, Redshift."],
+  ["Streaming","Kafka or equivalents, for real-time data."]],
+ ds:[["Language","Python in most cases. R in academia and statistics."],
+  ["Data libraries","pandas, NumPy, Polars."],
+  ["Machine learning","scikit-learn for classic models, PyTorch or TensorFlow for neural networks."],
+  ["Work environment","Jupyter notebooks."],
+  ["MLOps","MLflow, Weights & Biases, for tracking experiments and models."]],
+ ai:[["Language","Usually Python or TypeScript."],
+  ["Models","The providers' APIs (Anthropic, OpenAI, Google) or open source models run on the company's own infrastructure."],
+  ["RAG and search","Embeddings and vector databases (pgvector, Pinecone, Weaviate etc.)."],
+  ["Tools and agents","Tool calling, MCP, the providers' SDKs or frameworks such as LangChain and LlamaIndex."],
+  ["Evaluation","Evals: test sets that measure the quality of the answers."]],
+ qa:[["Test management","Jira, with TestRail, Xray, Zephyr Scale or something similar."],
+  ["API testing","Postman, Insomnia or equivalents."],
+  ["Browser","DevTools, to see errors and requests to the server."],
+  ["Types of testing","Functional, regression, exploratory, compatibility."]],
+ sdet:[["Language","Usually the same as the development team's: TypeScript/JavaScript, Java, Python or C#."],
+  ["UI / end-to-end tests","Playwright, Cypress or Selenium for web; Appium for mobile."],
+  ["API tests","Postman, REST Assured (Java) or the HTTP libraries of the language used."],
+  ["Unit testing","The language's framework: JUnit, pytest, NUnit, Jest etc."],
+  ["Performance","k6, JMeter, Gatling."],
+  ["CI/CD","Integrating tests into the pipeline, so they run on every change."]],
+ appsec:[["Standards","OWASP Top 10, OWASP ASVS."],
+  ["Automated scanning","SAST for code (SonarQube, Semgrep, Checkmarx), DAST for the running application (OWASP ZAP, Burp Suite), SCA for vulnerable libraries (Snyk, Dependabot)."],
+  ["Threat modeling","Risk analysis starting from the design of a system."],
+  ["Programming","The languages used by the teams they work with."]],
+ soc:[["SIEM","Splunk, Microsoft Sentinel, Elastic, QRadar etc."],
+  ["EDR","CrowdStrike, Microsoft Defender, SentinelOne etc."],
+  ["Networking","Traffic analysis, for example with Wireshark."],
+  ["Reference framework","MITRE ATT&CK, the catalog of attack techniques."]],
+ pent:[["Operating system","Kali Linux or Parrot OS."],
+  ["Web","Burp Suite, OWASP ZAP."],
+  ["Network","Nmap, Wireshark, Metasploit."],
+  ["Scripting","Python, Bash."],
+  ["Certifications","eJPT to start, OSCP as the industry standard."]],
+ grc:[["Standards","ISO 27001, SOC 2, NIST."],
+  ["Legislation","GDPR, NIS2, DORA (financial sector), AI Act."],
+  ["Tools","GRC platforms (Vanta, Drata, OneTrust) or Excel and Confluence in smaller companies."]],
+ ux:[["Design","Figma, the most used. Less often Sketch or Adobe XD."],
+  ["Research","Interviews, usability tests, analytics."],
+  ["Design system","Components and visual rules reused across the whole application."],
+  ["Accessibility","The WCAG standard."]],
+ pm:[["Planning","Jira, Linear, Productboard, roadmaps."],
+  ["Analytics","Amplitude, Mixpanel, Google Analytics, basic SQL."],
+  ["Experiments","A/B testing."],
+  ["Documentation","Confluence, Notion."]],
+ po:[["Backlog","Jira, Azure DevOps or equivalents."],
+  ["Documentation","Confluence, Notion."],
+  ["Formats","User stories, acceptance criteria."]],
+ ba:[["Documentation","Confluence, Notion, Word."],
+  ["Process modeling","BPMN, UML, drawn in Visio, draw.io, Lucidchart etc."],
+  ["Data","Basic SQL, Excel."],
+  ["Tasks","Jira, Azure DevOps."]],
+ sm:[["Methodologies","Scrum, Kanban."],
+  ["Tools","Jira or Azure DevOps, Miro for retrospectives."],
+  ["Certifications","PSM, CSM."]],
+ arh:[["Documentation","C4 diagrams, UML, ADRs."],
+  ["Architecture styles","Monolith, microservices, event-driven, serverless, and when each one fits."],
+  ["Cloud","The services of a provider (AWS, Azure, Google Cloud)."],
+  ["Integration","REST, gRPC, message queues (Kafka, RabbitMQ)."],
+  ["Design principles","Design patterns, SOLID principles, clean code."],
+  ["Stack","At least one backend stack known in depth."]],
+ tl:[["Stack","The team's technologies, at senior level."],
+  ["Code review","Code standards (clean code, design patterns) and reviews."],
+  ["Technical planning","Estimates, splitting features into tasks, ADRs."]],
+ em:[["People","1:1s, feedback, performance reviews, recruiting."],
+  ["Processes","Scrum or Kanban, delivery metrics (for example DORA metrics)."],
+  ["Tools","Jira, Confluence, Linear."]]
+};
+
+const ASPECTS=["Teams","Product and design","Development","Testing","Infrastructure","Security","Data and AI","Leadership"];
+const SIZES=[
+ ["Startup","5 - 30 people",[
+  [[],"1 - 3 mixed teams. Everyone works on the whole product."],
+  [["pm"],"The founder or a product manager decides what gets built. The design is done by the PM, a freelancer or the developers."],
+  [["fs","mob"],"Mostly fullstack, because there are few people."],
+  [[],"Usually no QA. Developers test their own code."],
+  [[],"One developer also handles the cloud and the deploy, in addition to code."],
+  [[],"No dedicated role. Sometimes an external consultant for audits."],
+  [[],"Rarely exists. The PM does the reports, and the developers do the AI part."],
+  [["tl"],"The CTO or a tech lead leads the whole technical side."]]],
+ ["Mid-size company","30 - 300 people",[
+  [[],"Several product teams, each on one part of the app (for example Orders, Payments, Delivery)."],
+  [["pm","ux"],"One PM per team or for two teams. A few designers shared between teams."],
+  [["fe","be","fs","mob"],"Specialized developers, but also fullstack."],
+  [["sdet","qa"],"QA in some teams, more and more focused on automation."],
+  [["devops","cloud"],"A small DevOps and cloud team for the whole company."],
+  [["appsec"],"One or two people on security, plus external audits."],
+  [["da","dataeng"],"A few people on data and reports."],
+  [["tl","em"],"A tech lead in each team, engineering managers for several teams."]]],
+ ["Large company","300+ people",[
+  [[],"Dozens of product teams, plus shared teams that work for all of them."],
+  [["pm","po","ux","ba"],"A PM and a designer in each team. Sometimes a separate PO and BA, especially in banks and corporations."],
+  [["fe","be","mob","emb"],"Highly specialized roles."],
+  [["sdet","qa"],"QA automation in teams, sometimes also a separate team for performance."],
+  [["plat","sre","cloud"],"Separate platform, SRE and cloud teams."],
+  [["appsec","soc","pent","grc"],"Its own security department, with SOC and compliance."],
+  [["dataeng","da","ds","ai"],"Dedicated data and AI teams."],
+  [["tl","em","arh"],"Architects, engineering managers on several levels, staff engineers."]]]
+];
+
+const GL=[
+ ["Basics",[
+  ["Programming language","The language used to write instructions for a computer, for example Java, Python or JavaScript.",["programming language","programming languages","A programming language"]],
+  ["Source code","The text written by programmers, from which the application is built.",["source code"]],
+  ["Framework","A ready-made structure on which you build an application. It gives you a set way to organize the code and handles the common parts (navigation, database access, security), so you only write the specific logic. Examples: Spring, Angular, Django.",["framework","frameworks","Frameworks"]],
+  ["Library","Ready-written code that you use for a specific task, for example working with data or charts. The difference from a framework: you call the library when you need it, while the framework sets the structure and calls your code.",["library","libraries","Libraries"]],
+  ["SDK","A set of tools and libraries offered by a company so you can use its product from code."],
+  ["IDE","The editor in which programmers write code, with autocomplete and debugging. Examples: VS Code, IntelliJ IDEA, Visual Studio."],
+  ["Terminal","The window where you give commands to the computer by typing text, without a graphical interface.",["terminal"]],
+  ["Server","A computer, usually in the cloud, that runs the application and responds to user requests.",["server","servers","Servers"]],
+  ["Client","The program that requests data from the server: the browser or the phone app."],
+  ["Frontend / Backend","The frontend is the part the user sees. The backend is the part that runs on the server."],
+  ["API","The interface through which two programs communicate. The phone app requests the list of restaurants from the server through an API."],
+  ["Endpoint","A specific address in an API, for example /orders."],
+  ["HTTP / HTTPS","The protocol through which the browser and applications communicate with servers. HTTPS is the encrypted version.",["HTTP","HTTPS"]],
+  ["JSON","A simple text format for data, used by most APIs."],
+  ["Database","The place where the application's data is stored in an organized way: users, orders, products.",["database","databases","Databases"]],
+  ["Cache","A temporary copy of some data, kept close to the application so it can be returned faster.",["cache","caching"]],
+  ["Open source","Software whose code is public and can be used and changed for free, for example Linux or PostgreSQL.",["open source"]],
+  ["Stack","The set of technologies used in a project, for example React, Node.js and PostgreSQL.",["stack"]]]],
+ ["Programming concepts",[
+  ["Data type","The kind of a value: number, text, true/false, list. Some languages check types before running (Java, C#, TypeScript), others only while running (Python, JavaScript).",["data types"]],
+  ["Function","A named piece of code that receives data, does something and returns a result. It can be called any number of times."],
+  ["Algorithm","The steps a program follows to solve a problem, for example sorting a list or finding the shortest route for a courier.",["algorithm","algorithms"]],
+  ["Data structures","Ways of organizing data in memory: lists, dictionaries (hash maps), trees, graphs. The right choice makes the program faster.",["data structures"]],
+  ["Complexity (Big O)","A way to describe how much the running time grows when the data grows, for example O(n) or O(n²). It comes up often in interviews.",["Big O"]],
+  ["Object-oriented programming (OOP)","A way of organizing code into objects that have both data and behavior. For example, an Order object has products and a price, plus a pay() method. It is the main style in Java, C# and Kotlin, and it is widely used in Python, TypeScript and others.",["OOP","object-oriented programming","Object-oriented programming"]],
+  ["Class and object","The class is the template (Order), and the object is a concrete instance created from it (order no. 1234).",["class","classes"]],
+  ["Encapsulation, inheritance, polymorphism","The basic ideas of OOP. Encapsulation: the object hides its internal details and exposes only what is needed. Inheritance: a class takes over the behavior of another class (CardPayment takes over from Payment). Polymorphism: different objects respond to the same command in their own way (pay() works differently for card and for cash).",["encapsulation","inheritance","polymorphism"]],
+  ["Functional programming","A programming style in which code is built from functions that do not change existing data but produce new data. Its ideas are used today in almost all languages (JavaScript, Kotlin, Scala, C#, Java).",["functional programming"]],
+  ["Asynchronous programming","The code starts a slow operation, for example a request to the server, and continues with other work until the response arrives, instead of waiting blocked.",["asynchronous","async"]],
+  ["Compiled vs. interpreted","A compiled language (C, C++, Go, Rust) is turned into machine code before it runs. An interpreted language (Python, JavaScript) is executed by an intermediate program while it runs. Java and C# are in the middle: they are compiled into an intermediate format, which is then run by a virtual machine."],
+  ["Design patterns","Standard, named solutions for problems that come up often in code, for example Singleton, Factory or Observer.",["design patterns"]],
+  ["SOLID","Five design principles for object-oriented code that make it easier to change and to test."],
+  ["Clean code","Code that is easy for someone else to read and change: clear names, short functions, no repetition.",["clean code"]]]],
+ ["Code and delivery",[
+  ["Repository","The place where a project's code is kept, together with its history.",["repository","repositories"]],
+  ["Commit","A change saved in Git, with a message that describes what changed."],
+  ["Branch","A separate copy of the code in which you work without affecting the main code."],
+  ["Merge","Combining the changes from a branch into the main code.",["merge","merged"]],
+  ["Pull request (PR)","A request for a code change to be checked by colleagues and added to the main code.",["pull request","pull requests"]],
+  ["Code review","The check of code by colleagues before it is added to the application.",["code review","code reviews"]],
+  ["Build","Turning source code into an application that can run."],
+  ["Deploy","Publishing a new version of the application to an environment (for example staging or production).",["deploy","deploys","deployment","deployments"]],
+  ["CI/CD","An automatic process: with every change, the code is tested (CI, continuous integration) and published (CD, continuous delivery) without manual steps."],
+  ["Pipeline","The sequence of automatic steps the code goes through: build, tests, deploy.",["pipeline","pipelines"]],
+  ["Environments","Separate places where the application runs: dev for development, staging for checking, production for customers.",["environments","staging"]],
+  ["Production","The real environment where customers use the application.",["production"]],
+  ["Release","A new version of the application, launched to users."],
+  ["Hotfix","An urgent fix for a bug in production, published outside the normal cycle.",["hotfix","hotfixes"]],
+  ["Bug","An error in the application: the application does something other than it should.",["bug","bugs","Bugs"]],
+  ["Debug","The process of finding the cause of a bug.",["debug","debugging"]],
+  ["Refactoring","Rewriting code so that it is clearer, without changing its behavior.",["refactoring"]],
+  ["Technical debt","Technical compromises made to deliver faster, which must be fixed later.",["technical debt"]],
+  ["Legacy","Old code or an old system that is still in use, usually hard to change."]]],
+ ["Infrastructure and operations",[
+  ["Cloud","Servers and services rented from providers such as Amazon, Microsoft or Google.",["cloud"]],
+  ["Container","An application packaged together with everything it needs to run.",["container","containers"]],
+  ["Virtual machine (VM)","A computer simulated by software, which runs on a physical server alongside other virtual machines.",["virtual machine","virtual machines","VM","VMs"]],
+  ["Load balancer","Splits traffic between several servers so that none of them is overloaded.",["load balancer","load balancers"]],
+  ["DNS","The system that turns a site name (for example example.com) into the server's address."],
+  ["Scalability","The ability of the application to handle more users by adding resources.",["scalability","scalable"]],
+  ["Uptime / downtime","The time when the application works, and the time when it does not work.",["uptime","downtime"]],
+  ["Log","The messages an application writes while it runs, used to investigate problems.",["logs","Logs","logging"]],
+  ["Metrics","Values measured continuously about the application: requests per second, response time, errors.",["metrics"]],
+  ["Monitoring and alerting","Continuous tracking of the application (monitoring) and sending alerts when something is wrong (alerting).",["monitoring","alerting"]],
+  ["Incident","A problem in production that affects users.",["incident","incidents"]],
+  ["On-call","A duty shift: the person on duty steps in if the application has problems outside working hours.",["on-call"]],
+  ["Backup","A safety copy of the data, from which it can be recovered if it is lost.",["backup","backups"]],
+  ["SaaS","Software as a Service: an application used directly from the browser, on a subscription, without installation. Examples: Jira, Slack."],
+  ["IoT","Internet of Things: physical devices connected to the internet, such as sensors, cameras or home appliances."]]],
+ ["Security",[
+  ["Authentication / authorization","Authentication checks who you are (account, password). Authorization checks what you are allowed to do.",["authentication","authorization"]],
+  ["Encryption","Transforming data so that it can be read only by someone who has the key.",["encryption","encrypted"]],
+  ["Vulnerability","A weakness in a system that an attacker can use.",["vulnerability","vulnerabilities"]],
+  ["Exploit","The code or method used to take advantage of a vulnerability.",["exploit","exploits"]],
+  ["Phishing","Fake messages that try to trick people into giving away their passwords or opening dangerous files."],
+  ["Blue team / red team","The blue team defends systems and responds to attacks. The red team simulates attacks, with the company's consent.",["blue team","red team"]]]],
+ ["Data and AI",[
+  ["Machine learning","Programs that learn rules from examples, instead of being programmed explicitly.",["machine learning"]],
+  ["Prompt","The instruction or question sent to an AI model.",["prompt","prompts"]],
+  ["Data pipeline","An automatic process that moves and transforms data from one place to another.",["data pipeline","data pipelines"]],
+  ["ETL","Extract, Transform, Load: taking data from a source, transforming it and loading it into another place."],
+  ["Data warehouse","A central database where the company's data is collected for analysis.",["data warehouse","data warehouses"]],
+  ["Dashboard","A screen with charts and numbers that shows a situation at a glance.",["dashboard","dashboards"]]]],
+ ["Team and product",[
+  ["Agile","A way of working in short stages, with frequent deliveries and adjustments along the way. Scrum and Kanban are the most used variants."],
+  ["Sprint","A fixed period of work, usually two weeks, at the end of which the team delivers something.",["sprint","sprints"]],
+  ["Daily standup","A short daily meeting where each person says what they are working on and what is blocking them.",["daily standup","standup"]],
+  ["Retrospective","A meeting at the end of a sprint about what went well and what needs to improve.",["retrospective","retrospectives","retro"]],
+  ["Backlog","The list of tasks and features the team will work on.",["backlog"]],
+  ["User story","A requirement written from the user's point of view: “As a customer, I want to..., so that...”.",["user story","user stories","User stories"]],
+  ["Acceptance criteria","The concrete conditions a feature must meet to be considered done.",["acceptance criteria"]],
+  ["Estimation","An assessment of the effort needed for a task, sometimes in story points instead of hours."],
+  ["Stakeholder","Any person with an interest in a project: customer, manager, another department.",["stakeholder","stakeholders"]],
+  ["Roadmap","The plan of what will be built in the coming months.",["roadmap","roadmaps"]],
+  ["MVP","Minimum Viable Product: the first, simplest possible version of a product, launched to see if it succeeds."],
+  ["Feature","A piece of functionality in the application, for example “Order again”."],
+  ["1:1","A regular conversation between a manager and a team member about progress, problems and development."]]]
+];
+
+const TECH=[
+ ["Programming languages",[
+  ["JavaScript","The language that runs in the browser. Almost every interactive web page uses it. With Node.js it also runs on the server."],
+  ["TypeScript","JavaScript with data types checked before running. The current standard for large web projects."],
+  ["Python","An easy-to-read language, used in data, AI, automation, testing and backend."],
+  ["Java","A language used a lot for backend in large companies, banks and enterprise systems. Usually with the Spring framework."],
+  ["C#","Microsoft's language, used for backend (with .NET), desktop applications and games (with Unity)."],
+  ["Go","A language created by Google, used for fast backend services and infrastructure tools (Docker and Kubernetes are written in Go)."],
+  ["PHP","A backend language for the web, used by many sites and by WordPress. Usually with the Laravel framework."],
+  ["Kotlin","The main language for Android apps. It is also used for backend."],
+  ["Swift","Apple's language for iOS and macOS apps."],
+  ["Dart","The language used by Flutter."],
+  ["C","An old language that is very close to the hardware. The foundation of embedded systems and operating systems."],
+  ["C++","An extension of the C language, used in embedded systems, games, browsers and systems where speed matters."],
+  ["Rust","A modern language for the same areas as C and C++, with fewer memory errors."],
+  ["Scala","A language that runs on the same platform as Java, used mainly in data processing (Spark)."],
+  ["R","A language for statistics and data analysis, used a lot in academia."],
+  ["GDScript","The scripting language of the Godot game engine, similar to Python."],
+  ["SQL","The language used to read and change data in relational databases (PostgreSQL, MySQL, SQL Server, Oracle, etc.)."],
+  ["Bash","A scripting language for the Linux terminal, used for automation."]]],
+ ["Frontend and mobile",[
+  ["HTML","The structure of a web page: headings, text, buttons, forms."],
+  ["CSS","The look of a web page: colors, sizes, layout."],
+  ["Sass","CSS with variables and functions, which is then turned into regular CSS."],
+  ["Tailwind","A CSS library with predefined classes for fast styling."],
+  ["Material UI","A library of ready-made components (buttons, tables, forms) for React."],
+  ["React","A JavaScript library for user interfaces, created by Meta. The most used one today."],
+  ["Angular","A frontend framework from Google, used a lot in enterprise projects."],
+  ["Vue","A frontend framework that is easier to learn, popular in small and medium projects."],
+  ["Svelte","A newer frontend framework that generates very lightweight code."],
+  ["Next.js","A framework built on top of React that adds the server part and navigation between pages."],
+  ["Nuxt","The equivalent of Next.js for Vue."],
+  ["SwiftUI","The modern way to build user interfaces for iOS, in Swift."],
+  ["UIKit","The older way to build user interfaces for iOS, still used in many apps."],
+  ["Jetpack Compose","The modern way to build user interfaces for Android, in Kotlin."],
+  ["Flutter","A Google framework with which you write a single app, in Dart, that runs on iOS and Android."],
+  ["React Native","The same purpose as Flutter, but using React and JavaScript/TypeScript."],
+  ["Kotlin Multiplatform","Lets you use the same Kotlin code on Android, iOS and other platforms."],
+  ["Firebase","A Google platform with ready-made services for apps: authentication, database, notifications."],
+  ["Vercel","A hosting platform for web applications, with automatic deploy from Git."],
+  ["Netlify","A hosting platform similar to Vercel."]]],
+ ["Backend",[
+  ["Spring","The standard backend framework in Java."],
+  [".NET","Microsoft's platform for backend and applications in C#."],
+  ["Node.js","Lets JavaScript run on the server, not only in the browser."],
+  ["Django","A complete backend framework in Python."],
+  ["FastAPI","A smaller backend framework in Python, often used for APIs."],
+  ["Laravel","The most used backend framework in PHP."],
+  ["REST API","The most common way the frontend and the backend exchange data, through HTTP requests.",["REST"]],
+  ["GraphQL","An alternative to REST in which the client asks for exactly the fields it needs."],
+  ["gRPC","A fast way for services to communicate, used mainly internally, between servers."],
+  ["Kafka","A system through which services send each other messages and events in real time, at very large volumes."],
+  ["RabbitMQ","A message queue: one service leaves a message, another one picks it up when it can."]]],
+ ["Databases",[
+  ["Relational databases","Data is stored in tables linked to each other and is queried with SQL. Examples: PostgreSQL, MySQL, SQL Server, Oracle.",["relational databases","relational"]],
+  ["NoSQL databases","Databases that do not use relational tables: documents (MongoDB), key-value (Redis), columns (Cassandra). Chosen for flexible data or very large volumes.",["NoSQL"]],
+  ["PostgreSQL","A relational database, open source and very widely used."],
+  ["MySQL","An open source relational database, very common in web applications."],
+  ["SQL Server","Microsoft's relational database, often used with .NET."],
+  ["Oracle","A commercial relational database, used a lot in banks and large companies."],
+  ["MongoDB","A NoSQL database that stores JSON documents instead of rows in tables."],
+  ["Redis","An in-memory NoSQL database, very fast, usually used as a cache."],
+  ["Cassandra","A NoSQL database for very large volumes of data, distributed across many servers."],
+  ["DynamoDB","A NoSQL database offered by AWS."]]],
+ ["Infrastructure and cloud",[
+  ["Linux","The operating system that most servers run on."],
+  ["Docker","Packages an application together with everything it needs (libraries, settings) into a container, so it runs the same way on any server."],
+  ["Kubernetes","Manages many containers across several servers: it starts them, restarts them when they stop and adds copies when traffic grows."],
+  ["EKS","Kubernetes managed by AWS."],["AKS","Kubernetes managed by Azure."],["GKE","Kubernetes managed by Google Cloud."],
+  ["AWS","Amazon Web Services, the largest cloud provider."],
+  ["Azure","Microsoft's cloud, used a lot by companies that already work with Microsoft products."],
+  ["Google Cloud","Google's cloud, strong in data and AI."],
+  ["Infrastructure as Code","Infrastructure (servers, networks, databases) is described in code files, instead of being configured manually."],
+  ["Terraform","The most used Infrastructure as Code tool. It works with all cloud providers."],
+  ["OpenTofu","An open source version of Terraform."],
+  ["Pulumi","Infrastructure as Code written in regular programming languages (TypeScript, Python, Go)."],
+  ["CloudFormation","AWS's own Infrastructure as Code tool."],
+  ["Bicep","Azure's own Infrastructure as Code tool."],
+  ["Crossplane","Manages cloud infrastructure through Kubernetes."],
+  ["Ansible","Automatically configures existing servers: installs programs and applies settings."],
+  ["Chef","A server configuration tool, similar to Ansible."],
+  ["Puppet","A server configuration tool, similar to Ansible."],
+  ["IAM","The system of access rights in the cloud: who is allowed to do what."],
+  ["FinOps","Tracking and optimizing cloud costs."]]],
+ ["Code, CI/CD and collaboration",[
+  ["Git","The system that keeps the history of code changes and allows people to work in parallel."],
+  ["GitHub","The most used platform for hosting code, with pull requests and code review."],
+  ["GitLab","A platform similar to GitHub, often used in companies, including installed on their own servers."],
+  ["Bitbucket","Atlassian's code platform, used together with Jira."],
+  ["Azure DevOps","Microsoft's platform for code, pipelines and tasks."],
+  ["GitHub Actions","CI/CD pipelines built into GitHub."],
+  ["GitLab CI","CI/CD pipelines built into GitLab."],
+  ["Jenkins","An older open source CI/CD tool, still used in many companies."],
+  ["CircleCI","A CI/CD service in the cloud."],
+  ["Argo CD","Automatically applies to Kubernetes the configuration described in Git (GitOps)."],
+  ["Flux","A GitOps tool similar to Argo CD."],
+  ["Backstage","An internal portal for developers, with the company's services, documentation and tools. Created by Spotify."],
+  ["Jira","The tool in which the team manages its tasks."],
+  ["Confluence","The platform in which the team keeps its documentation."],
+  ["Notion","An app for documentation and notes, used as an alternative to Confluence."],
+  ["Linear","A task tool, a simpler alternative to Jira."],
+  ["Miro","An online whiteboard for workshops and retrospectives."],
+  ["Claude Code","A coding assistant from Anthropic that works directly in the project and in the terminal."],
+  ["GitHub Copilot","A coding assistant from GitHub, built into the editor."],
+  ["Cursor","A code editor built around an AI assistant."]]],
+ ["Monitoring",[
+  ["Prometheus","Collects metrics from applications and servers, for example the number of requests per second or the memory used."],
+  ["Grafana","Displays metrics in charts and dashboards."],
+  ["Datadog","A complete commercial platform for monitoring and logs."],
+  ["New Relic","A commercial monitoring platform, similar to Datadog."],
+  ["OpenTelemetry","A standard for collecting logs, metrics and the path of requests through an application."],
+  ["ELK","Elasticsearch, Logstash and Kibana: collecting, searching and displaying logs."],
+  ["PagerDuty","Sends alerts to the on-call person and manages the shifts."],
+  ["Opsgenie","An alerting and on-call tool, similar to PagerDuty."],
+  ["SLO","Service Level Objective: the operating target of a service, for example available 99.9% of the time."],
+  ["Postmortem","The written analysis after an incident: what happened, why, and what changes so it does not happen again.",["postmortem","postmortems"]]]],
+ ["Testing",[
+  ["Unit testing framework","Each language has its own: JUnit (Java), pytest (Python), xUnit or NUnit (C#), Jest or Vitest (JavaScript), the testing package (Go).",["unit testing"]],
+  ["JUnit","The unit testing framework for Java."],
+  ["pytest","The most used unit testing framework in Python."],
+  ["xUnit","A unit testing framework for C#."],
+  ["NUnit","A unit testing framework for C#, an alternative to xUnit."],
+  ["Jest","A unit testing framework for JavaScript and TypeScript."],
+  ["Vitest","A newer and faster alternative to Jest."],
+  ["Playwright","Automatically controls a browser for end-to-end tests. The most used tool of this kind today."],
+  ["Cypress","A tool for end-to-end tests in the browser, popular in JavaScript projects."],
+  ["Selenium","The older tool for automated tests in the browser, still used in many companies."],
+  ["Appium","A tool for automated tests on mobile apps."],
+  ["Postman","Sends requests to an API and checks the responses. Used both manually and automatically."],
+  ["Insomnia","An alternative to Postman."],
+  ["REST Assured","A Java library for automated API tests."],
+  ["k6","Performance tests: simulates thousands of users at the same time. Tests are written in JavaScript."],
+  ["JMeter","An older tool for performance tests."],
+  ["Gatling","A tool for performance tests, an alternative to k6 and JMeter."],
+  ["TestRail","An application where test cases and test results are kept."],
+  ["Xray","A Jira plugin for test cases."],
+  ["Zephyr Scale","A Jira plugin for test cases, an alternative to Xray."]]],
+ ["Data",[
+  ["Excel","Microsoft's spreadsheet, still used everywhere for quick analysis."],
+  ["Google Sheets","Google's spreadsheet, similar to Excel."],
+  ["Power BI","Microsoft's tool for reports and dashboards."],
+  ["Tableau","A tool for reports and dashboards, an alternative to Power BI."],
+  ["Looker","Google's tool for reports and dashboards."],
+  ["Metabase","An open source tool for dashboards."],
+  ["pandas","A Python library for working with data tables."],
+  ["NumPy","A Python library for numerical calculations."],
+  ["Polars","A faster alternative to pandas."],
+  ["Jupyter","An environment where you write Python code step by step and see the result right away."],
+  ["Apache Spark","Processes very large volumes of data on several computers in parallel.",["Spark"]],
+  ["dbt","Transforms data in the data warehouse with SQL, with tests and versioning."],
+  ["Airflow","Schedules and runs data pipelines at the right time and in the right order."],
+  ["Dagster","A newer alternative to Airflow."],
+  ["Prefect","A newer alternative to Airflow."],
+  ["Snowflake","A data warehouse in the cloud: storage and analysis for large volumes of data."],
+  ["BigQuery","Google Cloud's data warehouse."],
+  ["Redshift","AWS's data warehouse."],
+  ["Databricks","A cloud platform for data and machine learning, built around Spark."],
+  ["scikit-learn","A Python library for classic machine learning."],
+  ["PyTorch","The main library for neural networks."],
+  ["TensorFlow","A Google library for neural networks, an alternative to PyTorch."],
+  ["MLflow","Tracks experiments and versions of machine learning models."],
+  ["Weights & Biases","A platform for tracking machine learning experiments."]]],
+ ["AI",[
+  ["LLM","Large language model, the type of AI behind assistants such as Claude or ChatGPT."],
+  ["RAG","A technique in which the AI model first searches the company's documents and answers based on them."],
+  ["Embeddings","Turning a text into a list of numbers that represents its meaning, so it can be compared with other texts.",["embeddings"]],
+  ["Vector databases","Store embeddings and allow searching by meaning, not by exact words.",["vector databases"]],
+  ["pgvector","An extension that adds vector search to PostgreSQL."],
+  ["Pinecone","A vector database in the cloud."],
+  ["Weaviate","An open source vector database."],
+  ["Tool calling","The ability of an AI model to call external functions and tools, for example a database search."],
+  ["MCP","Model Context Protocol: a standard through which an AI model connects to external tools and data sources."],
+  ["LangChain","A framework for applications with LLMs."],
+  ["LlamaIndex","A framework for applications with LLMs, focused on RAG."],
+  ["Evals","Sets of tests that measure how often an AI system answers correctly."]]],
+ ["Security",[
+  ["OWASP Top 10","The list of the most common vulnerabilities in web applications."],
+  ["OWASP ASVS","A detailed list of security requirements for applications."],
+  ["OWASP ZAP","An open source tool for security scanning of web applications."],
+  ["SAST","Automatic analysis of source code for vulnerabilities."],
+  ["DAST","Automatic testing of the running application, from the outside, for vulnerabilities."],
+  ["SCA","Checking the libraries used by the application for known vulnerabilities."],
+  ["SonarQube","Analyzes code and finds quality and security problems."],
+  ["Semgrep","An open source SAST tool."],
+  ["Checkmarx","A commercial SAST tool."],
+  ["Snyk","Finds vulnerabilities in the libraries used and in the code."],
+  ["Dependabot","A GitHub tool that automatically proposes updates for vulnerable libraries."],
+  ["Burp Suite","Intercepts the traffic between the browser and the server, for security testing."],
+  ["Threat modeling","Analyzing security risks from the moment a system is designed."],
+  ["SIEM","A system that collects logs from the whole company and generates security alerts."],
+  ["Splunk","One of the most used SIEMs."],
+  ["Microsoft Sentinel","Microsoft's SIEM, in Azure."],
+  ["Elastic","A search and logs platform, also used as a SIEM."],
+  ["QRadar","A SIEM used in large companies."],
+  ["EDR","Software installed on computers and servers that detects suspicious behavior."],
+  ["CrowdStrike","One of the most used EDR solutions."],
+  ["Microsoft Defender","Microsoft's EDR solution."],
+  ["SentinelOne","An EDR solution, an alternative to CrowdStrike."],
+  ["MITRE ATT&CK","A public catalog of the techniques used by attackers."],
+  ["Kali Linux","A Linux distribution with security testing tools preinstalled."],
+  ["Parrot OS","A Linux distribution for security, an alternative to Kali."],
+  ["Nmap","Scans a network and shows which servers and services are reachable."],
+  ["Wireshark","Captures and displays network traffic."],
+  ["Metasploit","A framework that contains ready-made exploits for known vulnerabilities."],
+  ["TryHackMe","An online platform with security exercises, suitable for beginners."],
+  ["Hack The Box","An online platform with security exercises, more advanced."],
+  ["CompTIA Security+","A basic security certification, recognized internationally."],
+  ["eJPT","An entry-level certification in penetration testing."],
+  ["OSCP","A practical penetration testing certification, highly respected."]]],
+ ["Compliance and standards",[
+  ["ISO 27001","An international standard for managing information security. Companies get certified against it."],
+  ["SOC 2","An American audit standard for the security of service providers."],
+  ["NIST","An American institute that publishes security standards and guidelines used everywhere."],
+  ["GDPR","The EU regulation on the protection of personal data."],
+  ["NIS2","An EU directive that requires companies in important sectors (energy, health, transport, digital) to ensure their cybersecurity."],
+  ["DORA","An EU regulation on digital resilience in the financial sector."],
+  ["AI Act","The EU regulation that sets rules for AI systems, based on risk."],
+  ["ISO 26262","The functional safety standard for software in cars."],
+  ["Vanta","A platform that automates preparation for audits (SOC 2, ISO 27001)."],
+  ["Drata","A platform similar to Vanta."],
+  ["OneTrust","A platform for compliance and data protection."]]],
+ ["Embedded and games",[
+  ["Microcontrollers","Very small computers on a single chip, used in devices."],
+  ["STM32","A family of microcontrollers widely used in industry."],
+  ["ESP32","A cheap microcontroller with WiFi and Bluetooth, popular in IoT projects."],
+  ["Arduino","Simple development boards, suitable for beginners."],
+  ["Raspberry Pi Pico","A cheap development board with a microcontroller."],
+  ["CAN","The protocol through which the electronic components in a car communicate with each other."],
+  ["I2C","A simple protocol through which a microcontroller communicates with sensors."],
+  ["SPI","A fast protocol for communication between chips."],
+  ["UART","A simple serial protocol, often used for debugging."],
+  ["RTOS","A real-time operating system, for devices that must respond within a guaranteed time."],
+  ["FreeRTOS","The most used open source RTOS."],
+  ["Zephyr","An open source RTOS supported by the Linux Foundation."],
+  ["AUTOSAR","The software architecture standard in the automotive industry."],
+  ["Unity","A game engine that uses C#, very widespread, including on mobile."],
+  ["Unreal Engine","A game engine that uses C++ and Blueprints, for advanced graphics.",["Unreal"]],
+  ["Blueprints","Visual programming in Unreal Engine, using connected blocks."],
+  ["Godot","An open source game engine, suitable for beginners."]]],
+ ["Architecture, product and processes",[
+  ["Monolith","An application built as a single block. It is often the right choice at the start."],
+  ["Microservices","An application split into small, independent services, for example payments, orders and delivery.",["microservices"]],
+  ["Event-driven","An architecture in which services react to events (for example “order placed”) instead of calling each other directly.",["event-driven"]],
+  ["Serverless","The code runs only when it is called, without servers that you manage. You pay per execution.",["serverless"]],
+  ["C4 diagrams","A standard way to draw a system's architecture at four levels of detail."],
+  ["UML","A standard notation for system and class diagrams."],
+  ["BPMN","A standard notation for business process diagrams."],
+  ["ADR","Architecture Decision Record: a short document that records a technical decision and the reason for it."],
+  ["Visio","Microsoft's application for diagrams."],
+  ["draw.io","A free application for diagrams."],
+  ["Lucidchart","An online application for diagrams."],
+  ["Amplitude","Shows how users use the application: what they click, where they give up."],
+  ["Mixpanel","A product analytics tool, similar to Amplitude."],
+  ["Google Analytics","Google's tool for statistics about the visitors of a site or an app."],
+  ["Productboard","A tool for managing feedback and the product roadmap."],
+  ["A/B testing","Two versions of the same screen are shown to different groups of users, to see which one works better."],
+  ["Scrum","A way of working in short sprints, usually two weeks long, with fixed roles and meetings."],
+  ["Kanban","A continuous way of working, without sprints: tasks move across a board through columns (to do, in progress, done)."],
+  ["PSM","Professional Scrum Master, a Scrum certification."],
+  ["CSM","Certified ScrumMaster, a Scrum certification."],
+  ["DORA metrics","Four standard metrics for how well a team delivers: deploy frequency, time to production, failure rate, recovery time."]]]
+];
+
+const UI={
+ rolesN:n=>`${n} roles →`, all:"All", entryYes:"open to beginners", entryNo:"needs experience",
+ statusLikes:h=>`${h} ${h===1?"role matches":"roles match"} your selection, shown first.`,
+ statusFam:(n,f)=>`${n} roles in ${f}.`, statusAll:n=>`${n} roles.`,
+ close:"Close", why:"What is changing for this role", app:"Example in the food delivery app", zi:"Day-to-day work",
+ tech:"Technologies, by category", techNote:"Each category has several options. A company usually uses one or two, not all of them. Click an underlined name to see what it is.",
+ fit:"A good fit if", start:"How to get started", ov:"Related roles",
+ seeIn:sec=>`See it in ${sec==="glosar"?"Glossary":"Technologies in brief"} →`,
+ noTech:q=>`No technology found for "${q}".`, noTerm:q=>`No term found for "${q}".`,
+ noRole:"no dedicated role", title:"Jobs in IT"
+};
+const TOCL={harta:"The main areas",roluri:"The roles",echipe:"What a team looks like",scadere:"Declining roles",testare:"Testing",tehnologii:"Technologies in brief",tendinte:"Trends",crestere:"Levels",glosar:"Glossary",start:"How to get started"};
+
+return {FAM,FAM_ORDER,LIKES,T,R,TK,GL,TECH,ASPECTS,SIZES,UI,TOCL};
+})();
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fc=f=>`--fc:var(--f-${f})`;
+
+function app(D,signal){
+const {FAM,FAM_ORDER,LIKES,T,R,TK,GL,TECH,ASPECTS,SIZES,UI,TOCL}=D;
+const on=(t,ev,fn,o={})=>t.addEventListener(ev,fn,{...o,signal});
+const byId=Object.fromEntries(R.map(r=>[r.id,r]));
+
+const TD={},AL={};
+GL.forEach(([cat,l])=>l.forEach(([k,d,al])=>{TD[k]={d,cat,sec:"glosar"};[k,...(al||[])].forEach(a=>AL[a]=k);}));
+TECH.forEach(([cat,l])=>l.forEach(([k,d,al])=>{TD[k]={d,cat,sec:"tehnologii"};[k,...(al||[])].forEach(a=>AL[a]=k);}));
+const TRE=new RegExp("(^|[^\\p{L}\\p{N}_])("+Object.keys(AL).sort((a,b)=>b.length-a.length).map(t=>t.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")).join("|")+")(?![\\p{L}\\p{N}_+#])","gu");
+function lk(t,self){
+  let out="",i=0,m;const seen=new Set();TRE.lastIndex=0;
+  while((m=TRE.exec(t))){
+    const s=m.index+m[1].length,term=m[2],k=AL[term];
+    out+=esc(t.slice(i,s));
+    out+=(k===self||seen.has(k)||!seen.add(k))?esc(term):`<button type="button" class="tk" data-k="${esc(k)}">${esc(term)}</button>`;
+    i=s+term.length;TRE.lastIndex=i;
+  }
+  return out+esc(t.slice(i));
+}
+const st={fam:null,likes:new Set()};
+function markSubs(){const t=$("#toc");if(!t)return;
+  t.querySelectorAll(".sub a").forEach(a=>{const h=a.getAttribute("href").slice(1);
+    const cur=a.dataset.fam!==undefined?FAM_ORDER[+a.dataset.fam]===st.fam:!!(document.getElementById(h)||{}).open;
+    a.classList.toggle("cur",cur);});}
+
+const map=$("#appmap");
+FAM_ORDER.forEach(f=>{
+  const d=FAM[f], n=R.filter(r=>r.f===f).length;
+  const b=document.createElement("button");
+  b.className="band b-"+f; b.style.cssText=fc(f); b.dataset.f=f; b.setAttribute("aria-pressed","false");
+  b.innerHTML=`<span class="fam"><i></i>${esc(d.n)}</span><span class="q">${esc(d.q)}</span><span class="ex">${esc(d.ex)}</span><span class="n">${UI.rolesN(n)}</span>`;
+  b.onclick=()=>{st.fam=f;render();document.getElementById("roluri").scrollIntoView();};
+  map.appendChild(b);
+});
+
+const famrow=$("#famrow");
+[[UI.all,null],...FAM_ORDER.map(f=>[FAM[f].n,f])].forEach(([n,f])=>{
+  const c=document.createElement("button");c.className="chip";c.dataset.f=f??"";
+  if(f)c.style.cssText=fc(f);
+  c.innerHTML=(f?"<i></i>":"")+esc(n);c.onclick=()=>{st.fam=(st.fam===f)?null:f;render();};famrow.appendChild(c);
+});
+const likerow=$("#likerow");
+Object.entries(LIKES).forEach(([k,v])=>{
+  const c=document.createElement("button");c.className="chip";c.dataset.k=k;c.textContent=v;c.setAttribute("aria-pressed","false");
+  c.onclick=()=>{st.likes.has(k)?st.likes.delete(k):st.likes.add(k);render();};likerow.appendChild(c);
+});
+
+function render(){
+  famrow.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",String((c.dataset.f||null)===st.fam)));
+  map.querySelectorAll(".band").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.f===st.fam)));
+  likerow.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",String(st.likes.has(c.dataset.k))));
+  let list=R.filter(r=>!st.fam||r.f===st.fam).map(r=>({r,m:r.l.filter(x=>st.likes.has(x)).length}));
+  if(st.likes.size)list.sort((a,b)=>b.m-a.m);
+  const g=$("#grid");g.innerHTML="";
+  list.forEach(({r,m})=>{
+    const c=document.createElement("button");c.className="card"+(st.likes.size&&!m?" dim":"");c.style.cssText=fc(r.f);
+    const [tl,tc]=T[r.t];
+    c.innerHTML=`<div class="top"><span class="fam"><i></i>${esc(FAM[r.f].n)}</span></div><h3>${esc(r.n)}</h3><p>${esc(r.s)}</p><div class="meta"><span class="pill ${tc}">${tl}</span><span class="pill">${r.e?UI.entryYes:UI.entryNo}</span></div>`;
+    c.onclick=()=>openRole(r.id);g.appendChild(c);
+  });
+  const hits=list.filter(x=>x.m).length;
+  $("#status").textContent=st.likes.size?UI.statusLikes(hits):(st.fam?UI.statusFam(list.length,FAM[st.fam].n):UI.statusAll(R.length));
+  markSubs();
+}
+
+const dlg=$("#dlg");
+function openRole(id){
+  const r=byId[id]; if(!r)return;
+  const [tl,tc]=T[r.t];
+  const ov=r.ov.filter(o=>byId[o]);
+  dlg.style.cssText=fc(r.f);
+  dlg.innerHTML=`<div class="dlg">
+   <button class="close" aria-label="${esc(UI.close)}" id="xbtn">×</button>
+   <header><span class="eyebrow" style="color:var(--fc)">${esc(FAM[r.f].n)}</span><h3>${esc(r.n)}</h3><p class="lead" style="color:var(--ink)">${esc(r.s)}</p>
+   <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="pill ${tc}">${tl}</span><span class="pill">${r.e?UI.entryYes:UI.entryNo}</span></div></header>
+   ${r.why?`<div class="blk ${r.t==="down"?"warn":"app"}"><h4>${esc(UI.why)}</h4><p>${lk(r.why)}</p></div>`:""}
+   <div class="blk app"><h4>${esc(UI.app)}</h4><p>${lk(r.app)}</p></div>
+   <div class="blk"><h4>${esc(UI.zi)}</h4><p>${lk(r.zi)}</p></div>
+   <div class="blk"><h4>${esc(UI.tech)}</h4><p style="color:var(--muted);font-size:.92rem">${esc(UI.techNote)}</p><ul class="techlist">${(TK[r.id]||[]).map(([c,d])=>`<li><code>${esc(c)}</code><span>${lk(d)}</span></li>`).join("")}</ul></div>
+   <div class="two"><div class="blk"><h4>${esc(UI.fit)}</h4><p>${esc(r.fit)}</p></div><div class="blk"><h4>${esc(UI.start)}</h4><p>${lk(r.start)}</p></div></div>
+   <div class="blk"><h4>${esc(UI.ov)}</h4><div class="links">${ov.map(o=>`<button data-id="${o}" style="${fc(byId[o].f)}"><i></i>${esc(byId[o].n)}</button>`).join("")}</div></div>
+  </div>`;
+  $("#xbtn").onclick=()=>dlg.close();
+  dlg.querySelectorAll(".links button").forEach(b=>b.onclick=()=>{openRole(b.dataset.id);dlg.scrollTop=0;});
+  if(!dlg.open)dlg.showModal();
+}
+on(dlg,"click",e=>{if(e.target===dlg)dlg.close();});
+
+const pop=document.createElement("div");pop.id="pop";pop.hidden=true;pop.setAttribute("role","dialog");
+function showPop(b){
+  const k=b.dataset.k,t=TD[k];if(!t)return;
+  const inDlg=dlg.contains(b),host=inDlg?dlg:$("#root");
+  pop.innerHTML=`<div class="pop-h"><span class="eyebrow">${esc(t.cat)}</span><button type="button" class="pop-x" aria-label="${esc(UI.close)}">×</button></div><b>${esc(k)}</b><p>${lk(t.d,k)}</p><button type="button" class="pop-go">${esc(UI.seeIn(t.sec))}</button>`;
+  pop.querySelector(".pop-x").onclick=hidePop;
+  pop.querySelector(".pop-go").onclick=()=>goTo(k);
+  host.appendChild(pop);pop.hidden=false;
+  const r=b.getBoundingClientRect(),w=pop.offsetWidth;
+  if(inDlg){const d=dlg.getBoundingClientRect();
+    pop.style.top=(r.bottom-d.top+dlg.scrollTop+6)+"px";
+    pop.style.left=Math.max(8,Math.min(r.left-d.left,d.width-w-8))+"px";
+  }else{
+    pop.style.top=(r.bottom+window.scrollY+6)+"px";
+    pop.style.left=Math.max(8,Math.min(r.left+window.scrollX,document.documentElement.clientWidth-w-8))+"px";
+  }
+}
+function hidePop(){pop.hidden=true;}
+function goTo(k){
+  hidePop();if(dlg.open)dlg.close();
+  if(TD[k].sec==="glosar"){$("#gq").value="";renderGl();}else{$("#tq").value="";renderTech();}
+  const el=[...document.querySelectorAll("[data-term]")].find(x=>x.dataset.term===k);
+  if(!el)return;
+  const dt=el.closest("details");if(dt)openCat(dt.id);
+  el.scrollIntoView({block:"center"});
+  el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash");
+}
+on(document,"click",e=>{
+  const b=e.target.closest(".tk");
+  if(b){e.stopPropagation();showPop(b);return;}
+  if(!e.target.closest("#pop"))hidePop();
+},{capture:true});
+on(dlg,"cancel",e=>{if(!pop.hidden){e.preventDefault();hidePop();}});
+on(dlg,"close",hidePop);
+
+const OPEN=new Set();
+let userOpen=null;
+on(document,"click",e=>{const sm=e.target.closest("details.techcat > summary");if(sm)userOpen=sm.parentElement.id;},{capture:true});
+function closeSiblings(d){d.parentElement.querySelectorAll("details.techcat[open]").forEach(x=>{if(x!==d){x.open=false;OPEN.delete(x.id);}});}
+on(document,"toggle",e=>{const d=e.target;if(!(d.matches&&d.matches("details.techcat")))return;
+  const searching=$("#tq").value||$("#gq").value;
+  if(!searching){d.open?OPEN.add(d.id):OPEN.delete(d.id);}
+  if(d.open&&d.id===userOpen&&!searching)closeSiblings(d);
+  if(d.id===userOpen)userOpen=null;
+  markSubs();},{capture:true});
+function openCat(id){const d=document.getElementById(id);if(d&&d.tagName==="DETAILS"){d.open=true;OPEN.add(id);closeSiblings(d);}}
+function setAll(pre,arr,v){arr.forEach((_,i)=>{const id=pre+"-"+i;v?OPEN.add(id):OPEN.delete(id);const d=document.getElementById(id);if(d)d.open=v;});}
+function cats(arr,pre,q){
+  q=q.trim().toLowerCase();
+  return arr.map(([cat,l],ci)=>{
+    const items=l.filter(([k,v,al])=>!q||[k,...(al||[])].some(x=>x.toLowerCase().includes(q))||v.toLowerCase().includes(q));
+    if(!items.length)return"";
+    const id=pre+"-"+ci,open=q||OPEN.has(id);
+    return `<details class="techcat" id="${id}"${open?" open":""}><summary><span class="sh"><h3>${esc(cat)}</h3><span class="cnt">${items.length}</span></span><span class="prev">${esc(items.slice(0,6).map(x=>x[0]).join(", "))}${items.length>6?", ...":""}</span></summary><ul class="techlist">${items.map(([k,v])=>`<li data-term="${esc(k)}"><code>${esc(k)}</code><span>${lk(v,k)}</span></li>`).join("")}</ul></details>`;
+  }).join("");
+}
+function renderTech(q=$("#tq").value){$("#techcats").innerHTML=cats(TECH,"t",q)||`<p class="lead">${esc(UI.noTech(q.trim()))}</p>`;markSubs();}
+function renderGl(q=$("#gq").value){$("#gloss").innerHTML=cats(GL,"g",q)||`<p class="lead">${esc(UI.noTerm(q.trim()))}</p>`;markSubs();}
+$("#tq").addEventListener("input",e=>renderTech(e.target.value));
+$("#gq").addEventListener("input",e=>renderGl(e.target.value));
+$("#tAll").onclick=()=>setAll("t",TECH,true);$("#tNone").onclick=()=>setAll("t",TECH,false);
+$("#gAll").onclick=()=>setAll("g",GL,true);$("#gNone").onclick=()=>setAll("g",GL,false);
+renderTech();renderGl();render();
+
+$("#sizes").innerHTML=SIZES.map(([n,sz,rows])=>`<div class="size"><div class="size-h"><h3>${esc(n)}</h3><span class="eyebrow">${esc(sz)}</span></div>${rows.map(([ids,t],i)=>`<div class="cell"><span class="asp">${esc(ASPECTS[i])}</span>${ids.length?`<div class="links">${ids.map(id=>`<button type="button" class="rchip" data-id="${id}" style="${fc(byId[id].f)}"><i></i>${esc(byId[id].n)}</button>`).join("")}</div>`:`<span class="none">${esc(UI.noRole)}</span>`}<p>${esc(t)}</p></div>`).join("")}</div>`).join("");
+document.querySelectorAll("#echipe .rchip").forEach(b=>b.onclick=()=>openRole(b.dataset.id));
+
+const TOC=[["harta"],["roluri",()=>FAM_ORDER.map(f=>[FAM[f].n,null])],["echipe"],["scadere"],["testare"],
+ ["tehnologii",()=>TECH.map(([c],i)=>[c,"t-"+i])],["tendinte"],["crestere"],["glosar",()=>GL.map(([c],i)=>[c,"g-"+i])],["start"]];
+const tocEl=$("#toc");
+tocEl.innerHTML=TOC.map(([id,sub])=>`<li data-sec="${id}"><a href="#${id}">${esc(TOCL[id])}</a>${sub?`<ol class="sub">${sub().map(([sn,t],j)=>t?`<li><a href="#${t}">${esc(sn)}</a></li>`:`<li><a href="#roluri" data-fam="${j}">${esc(sn)}</a></li>`).join("")}</ol>`:""}</li>`).join("");
+tocEl.querySelectorAll('a[href^="#t-"],a[href^="#g-"]').forEach(a=>a.addEventListener("click",()=>openCat(a.getAttribute("href").slice(1))));
+tocEl.querySelectorAll("[data-fam]").forEach(a=>a.onclick=e=>{e.preventDefault();st.fam=FAM_ORDER[+a.dataset.fam];render();document.getElementById("roluri").scrollIntoView();});
+document.querySelectorAll('#toc li[data-sec="roluri"] > a, nav.top a[href="#roluri"]').forEach(a=>a.addEventListener("click",()=>{st.fam=null;st.likes.clear();render();}));
+document.querySelectorAll('#toc li[data-sec="tehnologii"] > a, nav.top a[href="#tehnologii"]').forEach(a=>a.addEventListener("click",()=>{$("#tq").value="";setAll("t",TECH,false);renderTech();}));
+document.querySelectorAll('#toc li[data-sec="glosar"] > a, nav.top a[href="#glosar"]').forEach(a=>a.addEventListener("click",()=>{$("#gq").value="";setAll("g",GL,false);renderGl();}));
+const secs=TOC.map(([id])=>document.getElementById(id));
+let tocRaf=0,tocLock=null;
+function setOn(id){tocEl.querySelectorAll(":scope > li").forEach(li=>li.classList.toggle("on",li.dataset.sec===id));}
+function tocActive(){tocRaf=0;if(tocLock)return setOn(tocLock);
+  let cur=secs[0];for(const el of secs){if(el.getBoundingClientRect().top<140)cur=el;}
+  if(innerHeight+scrollY>=document.documentElement.scrollHeight-4)cur=secs[secs.length-1];
+  setOn(cur.id);}
+tocEl.querySelectorAll(":scope > li").forEach(li=>li.addEventListener("click",()=>{tocLock=li.dataset.sec;setOn(tocLock);}));
+["wheel","touchstart","keydown"].forEach(ev=>on(window,ev,()=>{tocLock=null;},{passive:true}));
+on(window,"scroll",()=>{if(!tocRaf)tocRaf=requestAnimationFrame(tocActive);},{passive:true});
+tocActive();markSubs();
+}
+
+let ac=null;
+function mount(lang){
+  if(!DATA[lang])lang="ro";
+  if(ac)ac.abort();
+  const dlg=document.getElementById("dlg");if(dlg&&dlg.open)dlg.close();
+  const root=document.getElementById("root");
+  root.innerHTML="";root.appendChild(document.getElementById("tpl-"+lang).content.cloneNode(true));
+  document.documentElement.lang=lang;document.title=DATA[lang].UI.title;
+  root.querySelectorAll("[data-setlang]").forEach(b=>{b.setAttribute("aria-pressed",String(b.dataset.setlang===lang));b.onclick=()=>{if(b.dataset.setlang!==lang){try{localStorage.setItem("lang",b.dataset.setlang)}catch(e){}mount(b.dataset.setlang);}};});
+  ac=new AbortController();
+  app(DATA[lang],ac.signal);
+}
+let startLang="ro";try{startLang=localStorage.getItem("lang")||"ro";}catch(e){}
+mount(startLang);
+
+</script>
+</body>
+</html>
