@@ -261,19 +261,38 @@ details.techcat > .techlist{padding:4px 18px 16px}
 .lang button{border:0;background:none;padding:4px 10px;cursor:pointer;font-family:var(--mono);font-size:.8rem;color:var(--muted)}
 .lang button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 .toc .sub a.cur{color:var(--ink);font-weight:600;background:var(--soft);border-left:2px solid var(--accent);border-radius:0 6px 6px 0}
+nav.top .wrap{flex-wrap:nowrap}
+nav.top b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:5px 9px;cursor:pointer;font-size:.88rem;flex:none}
+.nbtn:hover{border-color:var(--accent)}
+.theme-btn .i-sun{display:none}
+:root[data-theme="dark"] .theme-btn .i-sun{display:block}
+:root[data-theme="dark"] .theme-btn .i-moon{display:none}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .theme-btn .i-sun{display:block}:root:not([data-theme="light"]) .theme-btn .i-moon{display:none}}
+@media (min-width:1180px){.menu-btn{display:none}}
+@media (max-width:1179px){
+  .toc{display:block;position:fixed;top:0;bottom:0;left:0;width:min(320px,86vw);z-index:40;background:var(--surface);border-right:1px solid var(--line);padding:calc(env(safe-area-inset-top,0px) + 20px) 16px calc(env(safe-area-inset-bottom,0px) + 24px);overflow-y:auto;transform:translateX(-102%);transition:transform .22s ease;visibility:hidden}
+  .toc.open{transform:none;visibility:visible}
+  .toc-bg{position:fixed;inset:0;z-index:39;background:rgba(8,12,20,.45)}
+  .toc .sub{display:grid}
+  .toc li:not(.on) > .sub{display:none}
+}
+@media (max-width:420px){.menu-btn span{display:none}}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <template id="tpl-ro">
 <nav class="top"><div class="wrap">
+  <button type="button" class="nbtn menu-btn" aria-expanded="false" aria-controls="tocbox"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg><span>Cuprins</span></button>
   <b>Meseriile din IT</b>
-  <a href="#harta">Harta</a><a href="#roluri">Roluri</a><a href="#echipe">Echipe</a><a href="#scadere">Roluri în scădere</a><a href="#testare">Testarea</a><a href="#tehnologii">Tehnologii</a><a href="#tendinte">Tendințe</a><a href="#crestere">Niveluri</a><a href="#glosar">Glosar</a>
   <div class="lang" role="group" aria-label="Limbă"><button type="button" data-setlang="ro">RO</button><button type="button" data-setlang="en">EN</button></div>
+  <button type="button" class="nbtn theme-btn" aria-label="Schimbă tema" title="Schimbă tema"><svg class="i-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M21 14.5A8.5 8.5 0 0 1 9.5 3a7 7 0 1 0 11.5 11.5z"/></svg><svg class="i-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></g></svg></button>
 </div></nav>
+<div class="toc-bg" hidden></div>
 
 <div class="layout">
-<aside class="toc" aria-label="Cuprins"><p class="eyebrow">Cuprins</p><ol id="toc"></ol></aside>
+<aside class="toc" id="tocbox" aria-label="Cuprins"><p class="eyebrow">Cuprins</p><ol id="toc"></ol></aside>
 <div class="wrap">
 
 <header class="hero">
@@ -438,13 +457,15 @@ details.techcat > .techlist{padding:4px 18px 16px}
 </template>
 <template id="tpl-en">
 <nav class="top"><div class="wrap">
+  <button type="button" class="nbtn menu-btn" aria-expanded="false" aria-controls="tocbox"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg><span>Contents</span></button>
   <b>Jobs in IT</b>
-  <a href="#harta">Map</a><a href="#roluri">Roles</a><a href="#echipe">Teams</a><a href="#scadere">Declining roles</a><a href="#testare">Testing</a><a href="#tehnologii">Technologies</a><a href="#tendinte">Trends</a><a href="#crestere">Levels</a><a href="#glosar">Glossary</a>
   <div class="lang" role="group" aria-label="Language"><button type="button" data-setlang="ro">RO</button><button type="button" data-setlang="en">EN</button></div>
+  <button type="button" class="nbtn theme-btn" aria-label="Change theme" title="Change theme"><svg class="i-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M21 14.5A8.5 8.5 0 0 1 9.5 3a7 7 0 1 0 11.5 11.5z"/></svg><svg class="i-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></g></svg></button>
 </div></nav>
+<div class="toc-bg" hidden></div>
 
 <div class="layout">
-<aside class="toc" aria-label="Contents"><p class="eyebrow">Contents</p><ol id="toc"></ol></aside>
+<aside class="toc" id="tocbox" aria-label="Contents"><p class="eyebrow">Contents</p><ol id="toc"></ol></aside>
 <div class="wrap">
 
 <header class="hero">
@@ -2303,6 +2324,12 @@ tocEl.querySelectorAll(":scope > li").forEach(li=>li.addEventListener("click",()
 ["wheel","touchstart","keydown"].forEach(ev=>on(window,ev,()=>{tocLock=null;},{passive:true}));
 on(window,"scroll",()=>{if(!tocRaf)tocRaf=requestAnimationFrame(tocActive);},{passive:true});
 tocActive();markSubs();
+const tbox=$("#tocbox"),tbg=$(".toc-bg"),mbtn=$(".menu-btn");
+function drawer(v){tbox.classList.toggle("open",v);tbg.hidden=!v;mbtn.setAttribute("aria-expanded",String(v));}
+mbtn.onclick=()=>drawer(!tbox.classList.contains("open"));
+tbg.onclick=()=>drawer(false);
+tbox.addEventListener("click",e=>{if(e.target.closest("a")&&innerWidth<1180)drawer(false);});
+on(document,"keydown",e=>{if(e.key==="Escape"&&tbox.classList.contains("open"))drawer(false);});
 }
 
 let ac=null;
@@ -2314,9 +2341,13 @@ function mount(lang){
   root.innerHTML="";root.appendChild(document.getElementById("tpl-"+lang).content.cloneNode(true));
   document.documentElement.lang=lang;document.title=DATA[lang].UI.title;
   root.querySelectorAll("[data-setlang]").forEach(b=>{b.setAttribute("aria-pressed",String(b.dataset.setlang===lang));b.onclick=()=>{if(b.dataset.setlang!==lang){try{localStorage.setItem("lang",b.dataset.setlang)}catch(e){}mount(b.dataset.setlang);}};});
+  root.querySelectorAll(".theme-btn").forEach(b=>b.onclick=()=>{
+    const cur=document.documentElement.dataset.theme||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+    const nx=cur==="dark"?"light":"dark";document.documentElement.dataset.theme=nx;try{localStorage.setItem("theme",nx)}catch(e){}});
   ac=new AbortController();
   app(DATA[lang],ac.signal);
 }
+try{const th=localStorage.getItem("theme");if(th)document.documentElement.dataset.theme=th;}catch(e){}
 let startLang="ro";try{startLang=localStorage.getItem("lang")||"ro";}catch(e){}
 mount(startLang);
 
