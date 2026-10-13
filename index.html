@@ -261,35 +261,39 @@ details.techcat > .techlist{padding:4px 18px 16px}
 .lang button{border:0;background:none;padding:4px 10px;cursor:pointer;font-family:var(--mono);font-size:.8rem;color:var(--muted)}
 .lang button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 .toc .sub a.cur{color:var(--ink);font-weight:600;background:var(--soft);border-left:2px solid var(--accent);border-radius:0 6px 6px 0}
-nav.top .wrap{flex-wrap:nowrap}
+nav.top .wrap{flex-wrap:nowrap;gap:8px}
+nav.top{z-index:20}
 nav.top b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.nbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:5px 9px;cursor:pointer;font-size:.88rem;flex:none}
+.nbtn{display:inline-flex;align-items:center;justify-content:center;height:34px;min-width:34px;padding:0 10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;cursor:pointer;font:600 14px var(--body);flex:none}
 .nbtn:hover{border-color:var(--accent)}
-.theme-btn .i-sun{display:none}
-:root[data-theme="dark"] .theme-btn .i-sun{display:block}
-:root[data-theme="dark"] .theme-btn .i-moon{display:none}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .theme-btn .i-sun{display:block}:root:not([data-theme="light"]) .theme-btn .i-moon{display:none}}
-@media (min-width:1180px){.menu-btn{display:none}}
+.menu-btn{display:none;font-size:18px}
+.where,.readbar{display:none}
 @media (max-width:1179px){
-  .toc{display:block;position:fixed;top:0;bottom:0;left:0;width:min(320px,86vw);z-index:40;background:var(--surface);border-right:1px solid var(--line);padding:calc(env(safe-area-inset-top,0px) + 20px) 16px calc(env(safe-area-inset-bottom,0px) + 24px);overflow-y:auto;transform:translateX(-102%);transition:transform .22s ease;visibility:hidden}
-  .toc.open{transform:none;visibility:visible}
-  .toc-bg{position:fixed;inset:0;z-index:39;background:rgba(8,12,20,.45)}
-  .toc .sub{display:grid}
+  .menu-btn{display:inline-flex}
+  nav.top b{display:none}
+  .where{display:block;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+  .readbar{display:block;position:absolute;left:0;bottom:-1px;height:3px;width:0;background:var(--accent)}
+  .toc{display:block;position:fixed;left:0;right:0;top:var(--navh,55px);z-index:19;max-height:calc(100vh - var(--navh,55px) - 8px);overflow-y:auto;background:var(--surface);border-bottom:1px solid var(--line);box-shadow:0 12px 24px rgba(0,0,0,.12);padding:12px 16px 16px}
+  .toc:not(.open){display:none}
+  .toc > .eyebrow{display:none}
+  .toc ol{max-width:640px;margin-inline:auto}
+  .toc a{font-size:1rem;padding:8px 10px}
   .toc li:not(.on) > .sub{display:none}
+  .toc li.on > .sub{display:grid}
 }
-@media (max-width:420px){.menu-btn span{display:none}}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <template id="tpl-ro">
 <nav class="top"><div class="wrap">
-  <button type="button" class="nbtn menu-btn" aria-expanded="false" aria-controls="tocbox"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg><span>Cuprins</span></button>
+  <button type="button" class="nbtn menu-btn" aria-expanded="false" aria-controls="tocbox" aria-label="Cuprins">&#9776;</button>
   <b>Meseriile din IT</b>
-  <div class="lang" role="group" aria-label="Limbă"><button type="button" data-setlang="ro">RO</button><button type="button" data-setlang="en">EN</button></div>
-  <button type="button" class="nbtn theme-btn" aria-label="Schimbă tema" title="Schimbă tema"><svg class="i-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M21 14.5A8.5 8.5 0 0 1 9.5 3a7 7 0 1 0 11.5 11.5z"/></svg><svg class="i-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></g></svg></button>
+  <span class="where"></span>
+  <button type="button" class="nbtn theme-btn" aria-label="Schimbă tema" title="Schimbă tema">&#9681;</button>
+  <button type="button" class="nbtn lang-btn" data-setlang="en" lang="en" title="English">EN</button>
+  <span class="readbar"></span>
 </div></nav>
-<div class="toc-bg" hidden></div>
 
 <div class="layout">
 <aside class="toc" id="tocbox" aria-label="Cuprins"><p class="eyebrow">Cuprins</p><ol id="toc"></ol></aside>
@@ -457,12 +461,13 @@ nav.top b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </template>
 <template id="tpl-en">
 <nav class="top"><div class="wrap">
-  <button type="button" class="nbtn menu-btn" aria-expanded="false" aria-controls="tocbox"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg><span>Contents</span></button>
+  <button type="button" class="nbtn menu-btn" aria-expanded="false" aria-controls="tocbox" aria-label="Contents">&#9776;</button>
   <b>Jobs in IT</b>
-  <div class="lang" role="group" aria-label="Language"><button type="button" data-setlang="ro">RO</button><button type="button" data-setlang="en">EN</button></div>
-  <button type="button" class="nbtn theme-btn" aria-label="Change theme" title="Change theme"><svg class="i-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M21 14.5A8.5 8.5 0 0 1 9.5 3a7 7 0 1 0 11.5 11.5z"/></svg><svg class="i-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></g></svg></button>
+  <span class="where"></span>
+  <button type="button" class="nbtn theme-btn" aria-label="Change theme" title="Change theme">&#9681;</button>
+  <button type="button" class="nbtn lang-btn" data-setlang="ro" lang="ro" title="Română">RO</button>
+  <span class="readbar"></span>
 </div></nav>
-<div class="toc-bg" hidden></div>
 
 <div class="layout">
 <aside class="toc" id="tocbox" aria-label="Contents"><p class="eyebrow">Contents</p><ol id="toc"></ol></aside>
@@ -2240,12 +2245,15 @@ on(dlg,"click",e=>{if(e.target===dlg)dlg.close();});
 const pop=document.createElement("div");pop.id="pop";pop.hidden=true;pop.setAttribute("role","dialog");
 function showPop(b){
   const k=b.dataset.k,t=TD[k];if(!t)return;
-  const inDlg=dlg.contains(b),host=inDlg?dlg:$("#root");
+  const inPop=!pop.hidden&&pop.contains(b);
+  const inDlg=inPop?dlg.contains(pop):dlg.contains(b),host=inDlg?dlg:$("#root");
+  const r=b.getBoundingClientRect();
   pop.innerHTML=`<div class="pop-h"><span class="eyebrow">${esc(t.cat)}</span><button type="button" class="pop-x" aria-label="${esc(UI.close)}">×</button></div><b>${esc(k)}</b><p>${lk(t.d,k)}</p><button type="button" class="pop-go">${esc(UI.seeIn(t.sec))}</button>`;
   pop.querySelector(".pop-x").onclick=hidePop;
   pop.querySelector(".pop-go").onclick=()=>goTo(k);
+  if(inPop)return;
   host.appendChild(pop);pop.hidden=false;
-  const r=b.getBoundingClientRect(),w=pop.offsetWidth;
+  const w=pop.offsetWidth;
   if(inDlg){const d=dlg.getBoundingClientRect();
     pop.style.top=(r.bottom-d.top+dlg.scrollTop+6)+"px";
     pop.style.left=Math.max(8,Math.min(r.left-d.left,d.width-w-8))+"px";
@@ -2315,7 +2323,7 @@ document.querySelectorAll('#toc li[data-sec="tehnologii"] > a, nav.top a[href="#
 document.querySelectorAll('#toc li[data-sec="glosar"] > a, nav.top a[href="#glosar"]').forEach(a=>a.addEventListener("click",()=>{$("#gq").value="";setAll("g",GL,false);renderGl();}));
 const secs=TOC.map(([id])=>document.getElementById(id));
 let tocRaf=0,tocLock=null;
-function setOn(id){tocEl.querySelectorAll(":scope > li").forEach(li=>li.classList.toggle("on",li.dataset.sec===id));}
+function setOn(id){tocEl.querySelectorAll(":scope > li").forEach(li=>li.classList.toggle("on",li.dataset.sec===id));const w=$(".where");if(w)w.textContent=TOCL[id]||"";}
 function tocActive(){tocRaf=0;if(tocLock)return setOn(tocLock);
   let cur=secs[0];for(const el of secs){if(el.getBoundingClientRect().top<140)cur=el;}
   if(innerHeight+scrollY>=document.documentElement.scrollHeight-4)cur=secs[secs.length-1];
@@ -2324,12 +2332,16 @@ tocEl.querySelectorAll(":scope > li").forEach(li=>li.addEventListener("click",()
 ["wheel","touchstart","keydown"].forEach(ev=>on(window,ev,()=>{tocLock=null;},{passive:true}));
 on(window,"scroll",()=>{if(!tocRaf)tocRaf=requestAnimationFrame(tocActive);},{passive:true});
 tocActive();markSubs();
-const tbox=$("#tocbox"),tbg=$(".toc-bg"),mbtn=$(".menu-btn");
-function drawer(v){tbox.classList.toggle("open",v);tbg.hidden=!v;mbtn.setAttribute("aria-expanded",String(v));}
-mbtn.onclick=()=>drawer(!tbox.classList.contains("open"));
-tbg.onclick=()=>drawer(false);
+const tbox=$("#tocbox"),mbtn=$(".menu-btn"),navEl=$("nav.top");
+function navH(){document.documentElement.style.setProperty("--navh",navEl.getBoundingClientRect().bottom+"px");}
+function drawer(v){if(v)navH();tbox.classList.toggle("open",v);mbtn.setAttribute("aria-expanded",String(v));}
+mbtn.onclick=e=>{e.stopPropagation();drawer(!tbox.classList.contains("open"));};
 tbox.addEventListener("click",e=>{if(e.target.closest("a")&&innerWidth<1180)drawer(false);});
+on(document,"click",e=>{if(tbox.classList.contains("open")&&!e.target.closest("#tocbox")&&!e.target.closest(".menu-btn"))drawer(false);});
 on(document,"keydown",e=>{if(e.key==="Escape"&&tbox.classList.contains("open"))drawer(false);});
+const rb=$(".readbar");
+function readbar(){const h=document.documentElement.scrollHeight-innerHeight;rb.style.width=(h>0?Math.min(100,scrollY/h*100):0)+"%";}
+on(window,"scroll",readbar,{passive:true});on(window,"resize",()=>{navH();readbar();});readbar();
 }
 
 let ac=null;
